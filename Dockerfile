@@ -1,8 +1,5 @@
 FROM node:20.2.0-alpine
 
-# Create app directory
-WORKDIR /app
-
 # Install app dependencies
 COPY package*.json ./
 
