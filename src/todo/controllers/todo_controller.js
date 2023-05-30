@@ -22,7 +22,7 @@ export const getTodo = async (req, res) => {
 
 export const destroyTodo = async (req, res) => {
     try {
-        await Todo.findByIdAndDelete(req.body.id).then((todo) => {
+        await Todo.findByIdAndDelete(req.params.id).then((todo) => {
             res.status(200).json({ result: todo })
         })
     } catch (error) {

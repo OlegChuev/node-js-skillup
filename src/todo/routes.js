@@ -14,7 +14,7 @@ const router = express.Router()
 router.get('/', listTodo)
 router.get('/:id', getTodo)
 router.post('/', postTodo)
-router.delete('/', destroyTodo)
+router.delete('/:id', destroyTodo)
 router.get('/seed', seedTodos)
 router.patch('/', updateTodo)
 

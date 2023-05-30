@@ -4,7 +4,7 @@ const todoApi = require('../src/todo/routes')
 const mainPage = require('../src/main/routes')
 
 module.exports = (app) => {
-    app.use('/todo', todoApi)
+    app.use('/api/todo', todoApi)
     app.use('/', mainPage)
 
     // 404 if route is not found
