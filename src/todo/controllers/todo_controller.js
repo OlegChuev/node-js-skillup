@@ -1,23 +1,11 @@
 import Todo from '../models/todo_model'
-
-// Practice of code inheritance
 import CustomClass from '../../../services/custom_class'
-
-const EventEmitter = require('events')
-const util = require('util')
-
-util.inherits(CustomClass, EventEmitter)
-
-CustomClass.prototype.notifyAbout = function (action) {
-    this.emit('dbInteraction', action)
-}
 
 const notifier = new CustomClass()
 
 notifier.on('dbInteraction', (action) => {
     console.log(`Interaction with DB: ${action}`)
 })
-//
 
 export const listTodo = async (req, res) => {
     try {
@@ -34,7 +22,11 @@ export const getTodo = async (req, res) => {
     try {
         await Todo.findById(req.params.id).then((todo) => {
             notifier.notifyAbout('get')
-            res.status(200).json(todo)
+
+            setTimeout(function () {
+                debugger
+                res.status(200).json(todo)
+            }, 100)
         })
     } catch (error) {
         res.status(404).json({ error: error.message })
