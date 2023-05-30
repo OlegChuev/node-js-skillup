@@ -9,7 +9,7 @@ mongoose
         dbUrl,
         { useNewUrlParser: true, useUnifiedTopology: true } // To avoid deprecated options
     )
-    .then(() => console.log('connected'))
+    .then(() => console.log('MongodDB connected'))
     .catch((e) => console.log(e))
 
 module.exports = mongoose

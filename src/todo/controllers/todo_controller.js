@@ -1,9 +1,19 @@
 import Todo from '../models/todo_model'
 
+export const listTodo = async (req, res) => {
+    try {
+        await Todo.find().then((todos) => {
+            res.status(200).json(todos)
+        })
+    } catch (error) {
+        res.status(404).json({ error: error.message })
+    }
+}
+
 export const getTodo = async (req, res) => {
     try {
-        await Todo.find().then((tests) => {
-            res.status(200).json(tests)
+        await Todo.findById(req.params.id).then((todo) => {
+            res.status(200).json(todo)
         })
     } catch (error) {
         res.status(404).json({ error: error.message })
@@ -12,8 +22,8 @@ export const getTodo = async (req, res) => {
 
 export const destroyTodo = async (req, res) => {
     try {
-        await Todo.findByIdAndDelete(req.params.id).then(() => {
-            res.status(200).json({ result: 'deleted' })
+        await Todo.findByIdAndDelete(req.body.id).then((todo) => {
+            res.status(200).json({ result: todo })
         })
     } catch (error) {
         res.status(404).json({ error: error.message })
@@ -29,6 +39,16 @@ export const postTodo = async (req, res) => {
         })
     } catch (error) {
         res.status(409).json({ error: error.message })
+    }
+}
+
+export const updateTodo = async (req, res) => {
+    try {
+        await Todo.findByIdAndUpdate(req.body.id, req.body).then((todo) => {
+            res.status(200).json({ result: todo })
+        })
+    } catch (error) {
+        res.status(404).json({ error: error.message })
     }
 }
 

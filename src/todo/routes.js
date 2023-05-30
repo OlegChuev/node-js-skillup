@@ -1,17 +1,21 @@
 const express = require('express')
 
 import {
+    listTodo,
     getTodo,
     postTodo,
     seedTodos,
-    destroyTodo
+    destroyTodo,
+    updateTodo
 } from './controllers/todo_controller'
 
 const router = express.Router()
 
-router.get('/', getTodo)
+router.get('/', listTodo)
+router.get('/:id', getTodo)
 router.post('/', postTodo)
 router.delete('/', destroyTodo)
 router.get('/seed', seedTodos)
+router.patch('/', updateTodo)
 
 module.exports = router

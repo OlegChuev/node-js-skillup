@@ -1,8 +1,12 @@
 const express = require('express')
+const bodyParser = require('body-parser')
 
 const app = express()
 
-const client = require('./services/mongoose_client')
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+
+require('./services/mongoose_client')
 
 app.set('view engine', 'ejs')
 
