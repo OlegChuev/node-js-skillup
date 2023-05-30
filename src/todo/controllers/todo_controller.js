@@ -1,8 +1,28 @@
 import Todo from '../models/todo_model'
 
+// Practice of code inheritance
+import CustomClass from '../../../services/custom_class'
+
+const EventEmitter = require('events')
+const util = require('util')
+
+util.inherits(CustomClass, EventEmitter)
+
+CustomClass.prototype.notifyAbout = function (action) {
+    this.emit('dbInteraction', action)
+}
+
+const notifier = new CustomClass()
+
+notifier.on('dbInteraction', (action) => {
+    console.log(`Interaction with DB: ${action}`)
+})
+//
+
 export const listTodo = async (req, res) => {
     try {
         await Todo.find().then((todos) => {
+            notifier.notifyAbout('list')
             res.status(200).json(todos)
         })
     } catch (error) {
@@ -13,6 +33,7 @@ export const listTodo = async (req, res) => {
 export const getTodo = async (req, res) => {
     try {
         await Todo.findById(req.params.id).then((todo) => {
+            notifier.notifyAbout('get')
             res.status(200).json(todo)
         })
     } catch (error) {
@@ -23,6 +44,7 @@ export const getTodo = async (req, res) => {
 export const destroyTodo = async (req, res) => {
     try {
         await Todo.findByIdAndDelete(req.params.id).then((todo) => {
+            notifier.notifyAbout('destroy')
             res.status(200).json({ result: todo })
         })
     } catch (error) {
@@ -35,6 +57,7 @@ export const postTodo = async (req, res) => {
 
     try {
         await newTodo.save().then(() => {
+            notifier.notifyAbout('post')
             res.status(200).json(newTodo)
         })
     } catch (error) {
@@ -45,6 +68,7 @@ export const postTodo = async (req, res) => {
 export const updateTodo = async (req, res) => {
     try {
         await Todo.findByIdAndUpdate(req.body.id, req.body).then((todo) => {
+            notifier.notifyAbout('update')
             res.status(200).json({ result: todo })
         })
     } catch (error) {

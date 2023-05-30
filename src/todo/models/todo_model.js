@@ -4,7 +4,7 @@ export const todoSchema = mongoose.Schema({
     title: String,
     description: String,
     isDone: Boolean,
-    username: String,
+    username: String
 })
 
 const Todo = mongoose.model('Todo', todoSchema)
