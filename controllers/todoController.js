@@ -35,24 +35,7 @@ export const getRandomTodo = (req, res) => {
 export const getTodo = (req, res) => {
     Todo.findById(req.params.id)
         .then((todo) => {
-            notifier.notifyAbout('get')
-
-            process.nextTick(() => {
-                console.log('nextTick') // 1
-            })
-
-            setImmediate(() => {
-                console.log('setImmediate', todo) // 2
-            })
-
-            setTimeout(() => {
-                console.log('setTimeout', todo) // 3
-                res.status(200).json(todo)
-            })
-
-            process.nextTick(() => {
-                console.log('nextTick', todo) // 1
-            })
+            res.status(200).json(todo)
         })
         .catch((error) => {
             res.status(404).json({ error: error.message })
