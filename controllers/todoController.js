@@ -1,5 +1,5 @@
-import Todo from '../models/todo_model'
-import CustomClass from '../../../services/custom_class'
+import Todo from '../models/Todo'
+import CustomClass from '../services/custom_class'
 
 const notifier = new CustomClass()
 
@@ -18,15 +18,28 @@ export const listTodo = async (req, res) => {
     }
 }
 
+// Event loop test
 export const getTodo = async (req, res) => {
     try {
         await Todo.findById(req.params.id).then((todo) => {
             notifier.notifyAbout('get')
 
+            process.nextTick(function () {
+                console.log('nextTick') // 1
+            })
+
+            setImmediate(function () {
+                console.log('setImmediate', todo) // 2
+            })
+
             setTimeout(function () {
-                debugger
+                console.log('setTimeout', todo) // 3
                 res.status(200).json(todo)
-            }, 100)
+            })
+
+            process.nextTick(function () {
+                console.log('nextTick', todo) // 1
+            })
         })
     } catch (error) {
         res.status(404).json({ error: error.message })
