@@ -7,81 +7,95 @@ notifier.on('dbInteraction', (action) => {
     console.log(`Interaction with DB: ${action}`)
 })
 
-export const listTodo = async (req, res) => {
-    try {
-        await Todo.find().then((todos) => {
+export const listTodo = (req, res) => {
+    Todo.find()
+        .then((todos) => {
             notifier.notifyAbout('list')
             res.status(200).json(todos)
         })
-    } catch (error) {
-        res.status(404).json({ error: error.message })
-    }
+        .catch((error) => {
+            res.status(404).json({ error: error.message })
+        })
+}
+
+export const getRandomTodo = (req, res) => {
+    const url = 'https://www.boredapi.com/api/activity'
+
+    fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+            res.status(200).json({ todo: data.activity })
+        })
+        .catch((error) => {
+            res.status(404).json({ error: error.message })
+        })
 }
 
 // Event loop test
-export const getTodo = async (req, res) => {
-    try {
-        await Todo.findById(req.params.id).then((todo) => {
+export const getTodo = (req, res) => {
+    Todo.findById(req.params.id)
+        .then((todo) => {
             notifier.notifyAbout('get')
 
-            process.nextTick(function () {
+            process.nextTick(() => {
                 console.log('nextTick') // 1
             })
 
-            setImmediate(function () {
+            setImmediate(() => {
                 console.log('setImmediate', todo) // 2
             })
 
-            setTimeout(function () {
+            setTimeout(() => {
                 console.log('setTimeout', todo) // 3
                 res.status(200).json(todo)
             })
 
-            process.nextTick(function () {
+            process.nextTick(() => {
                 console.log('nextTick', todo) // 1
             })
         })
-    } catch (error) {
-        res.status(404).json({ error: error.message })
-    }
+        .catch((error) => {
+            res.status(404).json({ error: error.message })
+        })
 }
 
-export const destroyTodo = async (req, res) => {
-    try {
-        await Todo.findByIdAndDelete(req.params.id).then((todo) => {
+export const destroyTodo = (req, res) => {
+    Todo.findByIdAndDelete(req.params.id)
+        .then((todo) => {
             notifier.notifyAbout('destroy')
             res.status(200).json({ result: todo })
         })
-    } catch (error) {
-        res.status(404).json({ error: error.message })
-    }
+        .catch((error) => {
+            res.status(404).json({ error: error.message })
+        })
 }
 
-export const postTodo = async (req, res) => {
+export const postTodo = (req, res) => {
     const newTodo = new Todo(req.body)
 
-    try {
-        await newTodo.save().then(() => {
+    newTodo
+        .save()
+        .then(() => {
             notifier.notifyAbout('post')
             res.status(200).json(newTodo)
         })
-    } catch (error) {
-        res.status(409).json({ error: error.message })
-    }
+        .catch((error) => {
+            res.status(409).json({ error: error.message })
+        })
 }
 
-export const updateTodo = async (req, res) => {
-    try {
-        await Todo.findByIdAndUpdate(req.body.id, req.body).then((todo) => {
+export const updateTodo = (req, res) => {
+    Todo.findByIdAndUpdate(req.body.id, req.body)
+        .then((todo) => {
             notifier.notifyAbout('update')
             res.status(200).json({ result: todo })
         })
-    } catch (error) {
-        res.status(404).json({ error: error.message })
-    }
+        .catch((error) => {
+            res.status(404).json({ error: error.message })
+        })
 }
 
-export const seedTodos = async (req, res) => {
+export const seedTodos = (req, res) => {
     const starterTodos = [
         {
             title: 'firstTodo',
@@ -91,11 +105,9 @@ export const seedTodos = async (req, res) => {
         }
     ]
 
-    try {
-        await Todo.insertMany(starterTodos).then(() =>
-            res.status(200).json({ status: 'done' })
-        )
-    } catch (error) {
-        res.status(123).json({ error: error.message })
-    }
+    Todo.insertMany(starterTodos)
+        .then(() => res.status(200).json({ status: 'done' }))
+        .catch((error) => {
+            res.status(123).json({ error: error.message })
+        })
 }

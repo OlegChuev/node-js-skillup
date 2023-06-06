@@ -4,7 +4,8 @@ import {
     postTodo,
     seedTodos,
     destroyTodo,
-    updateTodo
+    updateTodo,
+    getRandomTodo
 } from '../controllers/todoController'
 
 const express = require('express')
@@ -18,5 +19,6 @@ router
     .delete('/:id', destroyTodo)
     .get('/seed', seedTodos)
     .put('/', updateTodo)
+    .get('/random/todo', getRandomTodo)
 
 module.exports = router
