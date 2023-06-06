@@ -1,16 +1,8 @@
 import Todo from '../models/Todo'
-import CustomClass from '../services/custom_class'
-
-const notifier = new CustomClass()
-
-notifier.on('dbInteraction', (action) => {
-    console.log(`Interaction with DB: ${action}`)
-})
 
 export const listTodo = (req, res) => {
     Todo.find()
         .then((todos) => {
-            notifier.notifyAbout('list')
             res.status(200).json(todos)
         })
         .catch((error) => {
@@ -45,7 +37,6 @@ export const getTodo = (req, res) => {
 export const destroyTodo = (req, res) => {
     Todo.findByIdAndDelete(req.params.id)
         .then((todo) => {
-            notifier.notifyAbout('destroy')
             res.status(200).json({ result: todo })
         })
         .catch((error) => {
@@ -59,7 +50,6 @@ export const postTodo = (req, res) => {
     newTodo
         .save()
         .then(() => {
-            notifier.notifyAbout('post')
             res.status(200).json(newTodo)
         })
         .catch((error) => {
@@ -70,7 +60,6 @@ export const postTodo = (req, res) => {
 export const updateTodo = (req, res) => {
     Todo.findByIdAndUpdate(req.body.id, req.body)
         .then((todo) => {
-            notifier.notifyAbout('update')
             res.status(200).json({ result: todo })
         })
         .catch((error) => {
