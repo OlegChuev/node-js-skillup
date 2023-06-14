@@ -8,12 +8,12 @@ import { clearModelCollection } from '../helper/dbHelper'
 const bcrypt = require('bcryptjs')
 
 describe('POST sign in endpoint', () => {
-    beforeEach(() => {
-        clearModelCollection(User)
+    beforeEach(async () => {
+        await clearModelCollection(User)
     })
 
-    afterAll(() => {
-        clearModelCollection(User)
+    afterAll(async () => {
+        await clearModelCollection(User)
     })
 
     describe('with valid sign in params', () => {
@@ -85,6 +85,14 @@ describe('POST sign in endpoint', () => {
 })
 
 describe('POST sign up endpoint', () => {
+    beforeEach(async () => {
+        await clearModelCollection(User)
+    })
+
+    afterAll(async () => {
+        await clearModelCollection(User)
+    })
+
     describe('with valid params', () => {
         const params = {
             username: faker.internet.userName(),

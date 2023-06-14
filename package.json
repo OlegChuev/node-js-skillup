@@ -7,7 +7,7 @@
     "build": "babel ./src --out-dir ./build",
     "dev": "nodemon --exec babel-node --inspect=0.0.0.0 api/index.js",
     "lint": "eslint .",
-    "test": "jest --i"
+    "test": "jest"
   },
   "author": "Oleg Chuev",
   "license": "ISC",

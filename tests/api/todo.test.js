@@ -6,12 +6,12 @@ import { clearModelCollection } from '../helper/dbHelper'
 import { generateAccessToken } from '../../modules/jwt/index'
 
 describe("GET todo's endpoint", () => {
-    beforeEach(() => {
-        clearModelCollection(Todo)
+    beforeEach(async () => {
+        await clearModelCollection(Todo)
     })
 
-    afterAll(() => {
-        clearModelCollection(Todo)
+    afterAll(async () => {
+        await clearModelCollection(Todo)
     })
 
     it('respond with valid HTTP status code and create todo', async () => {
@@ -102,5 +102,33 @@ describe("GET todo's endpoint", () => {
         expect(await Todo.find()).toHaveLength(0)
     })
 
-    // it('respond with valid HTTP status code and update todo', async () => {})
+    it('respond with valid HTTP status code and update todo', async () => {
+        const starterTodo = {
+            title: faker.location.city(),
+            description: faker.location.city(),
+            isDone: false,
+            username: faker.internet.userName()
+        }
+        const todo = new Todo(starterTodo)
+        const savedTodo = await todo.save()
+
+        expect(await Todo.find()).toHaveLength(1)
+
+        const newDescription = faker.internet.userName()
+
+        const response = await request(app)
+            .put(`/api/todo`)
+            .set(
+                'Authorization',
+                `Bearer ${generateAccessToken({ user: 'currentUser' })}`
+            )
+            .send({
+                id: savedTodo.id,
+                description: newDescription
+            })
+
+        expect(response.status).toBe(200)
+        const todoAfterUpdate = await Todo.findById(savedTodo.id)
+        expect(todoAfterUpdate.description).toBe(newDescription)
+    })
 })
