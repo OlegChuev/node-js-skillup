@@ -38,6 +38,8 @@ connectDB()
 
 // Once successfully connected to DB -> start server
 mongoose.connection.once('connected', () => {
+    if (process.env.NODE_ENV === 'test') return
+
     console.log('Connected to the DB')
 
     const PORT = process.env.PORT || config.port
@@ -46,9 +48,6 @@ mongoose.connection.once('connected', () => {
         console.log(`Server is running and listening on port ${PORT}`)
     })
 })
-
-// celebrate error handler
-app.use(errors())
 
 // todo's routes
 app.use('/api/todo(s)?', require('../routes/todoRoutes'))
@@ -64,8 +63,11 @@ app.use('/assets', express.static('../public/'))
 
 // 404 if route is not found
 app.use('*', (req, res) => {
-    res.status(400)
+    res.status(404)
     res.send('Unknown route')
 })
+
+// celebrate error handler
+app.use(errors())
 
 module.exports = app

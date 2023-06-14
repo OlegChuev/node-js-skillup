@@ -79,6 +79,6 @@ export const seedTodos = (req, res) => {
     Todo.insertMany(starterTodos)
         .then(() => res.status(200).json({ status: 'done' }))
         .catch((error) => {
-            res.status(123).json({ error: error.message })
+            res.status(500).json({ error: error.message })
         })
 }

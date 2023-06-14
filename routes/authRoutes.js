@@ -10,8 +10,8 @@ router
         '/sign_in',
         celebrate({
             body: Joi.object({
-                username: Joi.string().required().min(4).max(16),
-                password: Joi.string().required().min(4).max(16)
+                username: Joi.string().required().min(4),
+                password: Joi.string().required().min(4)
             })
         }),
         signIn
@@ -20,8 +20,8 @@ router
         '/sign_up',
         celebrate({
             body: Joi.object({
-                username: Joi.string().required().min(4).max(16),
-                password: Joi.string().required().min(4).max(16)
+                username: Joi.string().required().min(4),
+                password: Joi.string().required().min(4)
             })
         }),
         signUp
