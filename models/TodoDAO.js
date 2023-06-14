@@ -25,7 +25,7 @@ class TodoDAO {
     }
 
     seedTodos() {
-        // not sure that if it should be here ¯\_(ツ)_/¯
+        // not sure if it should be here ¯\_(ツ)_/¯
 
         const data = [
             {

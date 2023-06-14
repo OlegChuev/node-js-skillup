@@ -41,7 +41,7 @@ export const destroyTodo = (req, res) => {
     todoDAO
         .deleteTodoById(req.params.id)
         .then((todo) => {
-            res.status(200).json({ result: todo })
+            res.status(200).json(todo)
         })
         .catch((error) => {
             res.status(404).json({ error: error.message })
@@ -63,7 +63,7 @@ export const updateTodo = (req, res) => {
     todoDAO
         .findTodoByIdAndUpdate(req.body.id, req.body)
         .then((todo) => {
-            res.status(200).json({ result: todo })
+            res.status(200).json(todo)
         })
         .catch((error) => {
             res.status(404).json({ error: error.message })
