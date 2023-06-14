@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-import-module-exports
 import { listUsers } from '../controllers/userController'
 
 const express = require('express')

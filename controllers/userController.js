@@ -1,8 +1,11 @@
-import User from '../models/User'
+import UserDAO from '../models/UserDAO'
+
+const userDAO = new UserDAO()
 
 // eslint-disable-next-line import/prefer-default-export
 export const listUsers = (_req, res) => {
-    User.find()
+    userDAO
+        .listUsers()
         .then((users) => {
             res.status(200).json(users)
         })

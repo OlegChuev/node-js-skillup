@@ -1,7 +1,10 @@
-import Todo from '../models/Todo'
+import TodoDAO from '../models/TodoDAO'
+
+const todoDAO = new TodoDAO()
 
 export const listTodo = (req, res) => {
-    Todo.find()
+    todoDAO
+        .listTodos()
         .then((todos) => {
             res.status(200).json(todos)
         })
@@ -24,7 +27,8 @@ export const getRandomTodo = (req, res) => {
 }
 
 export const getTodo = (req, res) => {
-    Todo.findById(req.params.id)
+    todoDAO
+        .getTodoById(req.params.id)
         .then((todo) => {
             res.status(200).json(todo)
         })
@@ -34,7 +38,8 @@ export const getTodo = (req, res) => {
 }
 
 export const destroyTodo = (req, res) => {
-    Todo.findByIdAndDelete(req.params.id)
+    todoDAO
+        .deleteTodoById(req.params.id)
         .then((todo) => {
             res.status(200).json({ result: todo })
         })
@@ -44,12 +49,10 @@ export const destroyTodo = (req, res) => {
 }
 
 export const postTodo = (req, res) => {
-    const newTodo = new Todo(req.body)
-
-    newTodo
-        .save()
-        .then(() => {
-            res.status(200).json(newTodo)
+    todoDAO
+        .createTodo(req.body)
+        .then((todo) => {
+            res.status(200).json(todo)
         })
         .catch((error) => {
             res.status(409).json({ error: error.message })
@@ -57,7 +60,8 @@ export const postTodo = (req, res) => {
 }
 
 export const updateTodo = (req, res) => {
-    Todo.findByIdAndUpdate(req.body.id, req.body)
+    todoDAO
+        .findTodoByIdAndUpdate(req.body.id, req.body)
         .then((todo) => {
             res.status(200).json({ result: todo })
         })
@@ -67,16 +71,8 @@ export const updateTodo = (req, res) => {
 }
 
 export const seedTodos = (req, res) => {
-    const starterTodos = [
-        {
-            title: 'firstTodo',
-            description: 'some text',
-            isDone: 'false',
-            username: 'someUserName'
-        }
-    ]
-
-    Todo.insertMany(starterTodos)
+    todoDAO
+        .seedTodos()
         .then(() => res.status(200).json({ status: 'done' }))
         .catch((error) => {
             res.status(500).json({ error: error.message })

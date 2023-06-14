@@ -1,46 +1,29 @@
-import User from '../models/User'
+import UserDAO from '../models/UserDAO'
 
-const bcrypt = require('bcryptjs')
-
-const jwt = require('../modules/jwt/index')
+const userDAO = new UserDAO()
 
 export const signIn = (req, res) => {
-    User.findOne({ username: req.body.username })
-        .then((user) => {
-            bcrypt.compare(req.body.password, user?.password || '').then((compareRes) => {
-              if (compareRes) {
-                res.status(200).json({ success: jwt.AUTHENTICATED, access_token: jwt.generateAccessToken({user: user}) })
-              }
-              else {
-                res.status(401).json({ error: jwt.UNAUTHENTICATED })
-              }
-            }).catch((error) => {
-              res.status(404).json({ error: error.message })
-            })
+    const { username, password } = req.body
+
+    userDAO
+        .signInUser(username, password)
+        .then((result) => {
+            res.status(200).json(result)
         })
         .catch((error) => {
-            res.status(404).json({ error: error.message })
+            res.status(401).json({ error: error.message })
         })
 }
 
 export const signUp = (req, res) => {
-    const saltRounds = 10
+    const { username, password } = req.body
 
-    bcrypt.genSalt(saltRounds, function (err, salt) {
-        bcrypt.hash(req.body.password, salt, function (err, hash) {
-            const newUser = new User({
-                password: hash,
-                username: req.body.username
-            })
-
-            newUser
-                .save()
-                .then(() => {
-                    res.status(200).json({ success: 'Account created' })
-                })
-                .catch((error) => {
-                    res.status(404).json({ error: error.message })
-                })
+    userDAO
+        .signUpUser(username, password)
+        .then(() => {
+            res.status(200).json({ success: 'Account created' })
         })
-    })
+        .catch((error) => {
+            res.status(401).json({ error: error.message })
+        })
 }
