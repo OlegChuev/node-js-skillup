@@ -7,5 +7,3 @@ describe("GET user's endpoint", () => {
         expect(response.status).toBe(200)
     })
 })
-
-app.close()

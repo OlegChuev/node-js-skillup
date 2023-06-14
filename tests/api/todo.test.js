@@ -9,5 +9,3 @@ describe("GET todo's endpoint", () => {
         // expect(response.body).toEqual(["Mars", "Moon", "Earth", "Mercury", "Venus", "Jupiter"]);
     })
 })
-
-app.close()

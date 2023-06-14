@@ -23,7 +23,6 @@ export const getRandomTodo = (req, res) => {
         })
 }
 
-// Event loop test
 export const getTodo = (req, res) => {
     Todo.findById(req.params.id)
         .then((todo) => {

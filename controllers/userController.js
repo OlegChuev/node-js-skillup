@@ -1,6 +1,7 @@
 import User from '../models/User'
 
-export const listUsers = (req, res) => {
+// eslint-disable-next-line import/prefer-default-export
+export const listUsers = (_req, res) => {
     User.find()
         .then((users) => {
             res.status(200).json(users)

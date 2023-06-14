@@ -2,80 +2,45 @@ import User from '../models/User'
 
 const bcrypt = require('bcryptjs')
 
-export const signIn = async (req, res) => {
-    try {
-        const user = await User.findOne({ username: req.body.username })
-        if (!user) return res.status(401).json({ error: 'Unauthenticated' })
+const jwt = require('../modules/jwt/index')
 
-        const compareResult = bcrypt.compareSync(
-            req.body.password,
-            user.password || ''
-        )
-
-        if (compareResult) {
-            res.status(200).json({ success: 'Authenticated' })
-        } else {
-            res.status(401).json({ error: 'Unauthenticated' })
-        }
-    } catch (error) {
-        res.status(401).json({ error: error.message })
-    }
-
-    // Callback Hell ?
-    //
-    // User.findOne({ username: req.body.username })
-    //     .then((user) => {
-    //         bcrypt.compare(req.body.password, user?.password || '').then((compareRes) => {
-    //           if (compareRes) {
-    //             res.status(200).json({ success: 'Authenticated' })
-    //           }
-    //           else {
-    //             res.status(401).json({ error: 'Unauthenticated' })
-    //           }
-    //         }).catch((error) => {
-    //           res.status(404).json({ error: error.message })
-    //         })
-    //     })
-    //     .catch((error) => {
-    //         res.status(404).json({ error: error.message })
-    //     })
-}
-
-export const signUp = async (req, res) => {
-    try {
-        const passwordHash = bcrypt.hashSync(
-            req.body.password,
-            bcrypt.genSaltSync(10)
-        )
-
-        const newUser = new User({
-            password: passwordHash,
-            username: req.body.username
+export const signIn = (req, res) => {
+    User.findOne({ username: req.body.username })
+        .then((user) => {
+            bcrypt.compare(req.body.password, user?.password || '').then((compareRes) => {
+              if (compareRes) {
+                res.status(200).json({ success: jwt.AUTHENTICATED, access_token: jwt.generateAccessToken({user: user}) })
+              }
+              else {
+                res.status(401).json({ error: jwt.UNAUTHENTICATED })
+              }
+            }).catch((error) => {
+              res.status(404).json({ error: error.message })
+            })
         })
-
-        await newUser.save()
-
-        res.status(200).json({ success: 'Account created' })
-    } catch (error) {
-        res.status(500).json({ error: error.message })
-    }
-
-    // bcrypt.genSalt(10, function (err, salt) {
-    //     bcrypt.hash(req.body.password, salt, function (err, hash) {
-    //         const newUser = new User({
-    //             password: passwordHash,
-    //             username: req.body.username
-    //         })
-    //         newUser
-    //             .save()
-    //             .then(() => {
-    //                 res.status(200).json({ success: 'Account created' })
-    //             })
-    //             .catch((error) => {
-    //                 res.status(404).json({ error: error.message })
-    //             })
-    //     })
-    // })
+        .catch((error) => {
+            res.status(404).json({ error: error.message })
+        })
 }
 
-export const signOut = (req, res) => {}
+export const signUp = (req, res) => {
+    const saltRounds = 10
+
+    bcrypt.genSalt(saltRounds, function (err, salt) {
+        bcrypt.hash(req.body.password, salt, function (err, hash) {
+            const newUser = new User({
+                password: hash,
+                username: req.body.username
+            })
+
+            newUser
+                .save()
+                .then(() => {
+                    res.status(200).json({ success: 'Account created' })
+                })
+                .catch((error) => {
+                    res.status(404).json({ error: error.message })
+                })
+        })
+    })
+}

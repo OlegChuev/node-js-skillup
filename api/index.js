@@ -5,8 +5,10 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const { errors } = require('celebrate')
 const cookieParser = require('cookie-parser')
-const connectDB = require('../config/connectDB')
-const config = require('../config.js')
+const connectDB = require('../config/connectDB').default
+const config = require('../config')
+
+const jwt = require('../modules/jwt/index')
 
 // cookie-parser
 app.use(cookieParser('secret'))
@@ -15,8 +17,20 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use((req, res, next) => {
-    // Pass to next layer of middleware
-    next()
+    const skipJwtCheckPathRegex = /(\/auth\/sign_(up|in))/
+
+    if (req.originalUrl.match(skipJwtCheckPathRegex)) {
+        next()
+        return
+    }
+
+    jwt.verifyAccessToken(
+        (req.headers.authorization || 'Bearer empty').split(' ')[1],
+        (err) => {
+            // eslint-disable-next-line no-unused-expressions
+            err ? res.status(401).json({ error: jwt.UNAUTHENTICATED }) : next()
+        }
+    )
 })
 
 // Connect to DB

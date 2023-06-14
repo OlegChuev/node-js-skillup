@@ -1,18 +1,18 @@
-const mongoose = require('mongoose')
-const config = require('../config')
+import { connect } from 'mongoose'
+import { dbUrlMongoDB, nodeEnv } from '.'
 
-const dbUrl = config.dbUrlMongoDB
+const dbUrl = dbUrlMongoDB
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(dbUrl, {
+        await connect(dbUrl, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            dbName: config.nodeEnv
+            dbName: nodeEnv
         })
     } catch (err) {
         console.error(`Error: ${err}`)
     }
 }
 
-module.exports = connectDB
+export default connectDB
