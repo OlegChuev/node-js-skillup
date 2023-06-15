@@ -16,6 +16,13 @@ jobs:
           paths:
             - ./node_modules
       - run:
+          name: set variables
+          command: |
+            touch .env
+            echo "NODE_ENV=$NODE_ENV" >> .env
+            echo "MONGODB_URL=$MONGODB_URL" >> .env
+            echo "ACCESS_TOKEN_SECRET=$ACCESS_TOKEN_SECRET" >> .env
+      - run:
           name: run api test
           command: npm test
       - store_artifacts:
