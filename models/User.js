@@ -4,11 +4,13 @@ export const userSchema = mongoose.Schema({
     username: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        minlength: 4
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        minlength: 4
     }
 })
 

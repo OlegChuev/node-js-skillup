@@ -7,7 +7,7 @@ import { clearModelCollection } from '../helper/dbHelper'
 
 const bcrypt = require('bcryptjs')
 
-describe('POST sign in endpoint', () => {
+describe('POST auth/sign_in', () => {
     beforeEach(async () => {
         await clearModelCollection(User)
     })
@@ -41,7 +41,7 @@ describe('POST sign in endpoint', () => {
         })
     })
 
-    describe("with invalid sign in params, user hasn't found", () => {
+    describe("when user hasn't found", () => {
         const params = {
             username: faker.internet.userName(),
             password: faker.internet.password()
@@ -73,7 +73,7 @@ describe('POST sign in endpoint', () => {
             }).save()
         })
 
-        it('responds with 401 error if user provided an incorrect password', async () => {
+        it('responds with 401 error', async () => {
             const response = await request(app)
                 .post('/auth/sign_in')
                 .send(params)
@@ -84,7 +84,7 @@ describe('POST sign in endpoint', () => {
     })
 })
 
-describe('POST sign up endpoint', () => {
+describe('POST auth/sign_up', () => {
     beforeEach(async () => {
         await clearModelCollection(User)
     })
