@@ -11,17 +11,21 @@ class UserDAO {
         return User.find()
     }
 
-    signUpUser(username, password) {
-        const saltRounds = 10
-        const salt = bcrypt.genSaltSync(saltRounds)
-        const hash = bcrypt.hashSync(password, salt)
+    async signUpUser(username, password) {
+        try {
+            const saltRounds = 10
+            const salt = await bcrypt.genSalt(saltRounds)
+            const hash = await bcrypt.hash(password, salt)
 
-        const newUser = new User({
-            password: hash,
-            username
-        })
+            const newUser = new User({
+                password: hash,
+                username
+            })
 
-        return newUser.save()
+            return await newUser.save()
+        } catch (error) {
+            throw new Error(error.message)
+        }
     }
 
     async signInUser(username, password) {
