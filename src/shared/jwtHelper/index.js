@@ -11,3 +11,5 @@ export const verifyAccessToken = (token, callback) => {
 export const AUTHENTICATED = 'Authenticated'
 
 export const UNAUTHENTICATED = 'Unauthenticated'
+
+export const FORBIDDEN = 'Forbidden'

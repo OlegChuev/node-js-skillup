@@ -1,8 +1,8 @@
 import request from 'supertest'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { faker } from '@faker-js/faker'
-import app from '../../api/index'
-import User from '../../models/User'
+import app from '../../src/api/index'
+import User from '../../src/models/User'
 import { clearModelCollection } from '../helper/dbHelper'
 
 const bcrypt = require('bcryptjs')

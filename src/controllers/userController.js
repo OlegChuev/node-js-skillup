@@ -3,7 +3,7 @@ import UserDAO from '../models/UserDAO'
 const userDAO = new UserDAO()
 
 // eslint-disable-next-line import/prefer-default-export
-export const listUsers = (_req, res) => {
+export const list = (_req, res) => {
     userDAO
         .listUsers()
         .then((users) => {

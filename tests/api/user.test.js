@@ -1,6 +1,6 @@
 import request from 'supertest'
-import app from '../../api/index'
-import { generateAccessToken } from '../../modules/jwt/index'
+import app from '../../src/api/index'
+import { generateAccessToken } from '../../src/shared/jwtHelper'
 
 describe('/api/user', () => {
     describe('GET', () => {

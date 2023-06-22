@@ -1,14 +1,11 @@
 import { connect } from 'mongoose'
-import { dbUrlMongoDB, nodeEnv } from '.'
-
-const dbUrl = dbUrlMongoDB
+import { url } from './db.config'
 
 const connectDB = async () => {
     try {
-        await connect(dbUrl, {
+        await connect(url, {
             useNewUrlParser: true,
-            useUnifiedTopology: true,
-            dbName: nodeEnv
+            useUnifiedTopology: true
         })
     } catch (err) {
         console.error(`Error: ${err}`)

@@ -2,7 +2,7 @@ import TodoDAO from '../models/TodoDAO'
 
 const todoDAO = new TodoDAO()
 
-export const listTodo = (req, res) => {
+export const list = (req, res) => {
     todoDAO
         .listTodos()
         .then((todos) => {
@@ -13,7 +13,7 @@ export const listTodo = (req, res) => {
         })
 }
 
-export const getRandomTodo = (req, res) => {
+export const getRandom = (req, res) => {
     const url = 'https://www.boredapi.com/api/activity'
 
     fetch(url)
@@ -26,7 +26,7 @@ export const getRandomTodo = (req, res) => {
         })
 }
 
-export const getTodo = (req, res) => {
+export const get = (req, res) => {
     todoDAO
         .getTodoById(req.params.id)
         .then((todo) => {
@@ -37,7 +37,7 @@ export const getTodo = (req, res) => {
         })
 }
 
-export const destroyTodo = (req, res) => {
+export const destroy = (req, res) => {
     todoDAO
         .deleteTodoById(req.params.id)
         .then((todo) => {
@@ -48,7 +48,7 @@ export const destroyTodo = (req, res) => {
         })
 }
 
-export const postTodo = (req, res) => {
+export const post = (req, res) => {
     todoDAO
         .createTodo(req.body)
         .then((todo) => {
@@ -59,7 +59,7 @@ export const postTodo = (req, res) => {
         })
 }
 
-export const updateTodo = (req, res) => {
+export const update = (req, res) => {
     todoDAO
         .findTodoByIdAndUpdate(req.body.id, req.body)
         .then((todo) => {
@@ -70,7 +70,7 @@ export const updateTodo = (req, res) => {
         })
 }
 
-export const seedTodos = (req, res) => {
+export const seed = (req, res) => {
     todoDAO
         .seedTodos()
         .then(() => res.status(200).json({ status: 'done' }))

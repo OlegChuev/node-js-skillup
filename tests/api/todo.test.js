@@ -1,9 +1,9 @@
 import request from 'supertest'
 import { faker } from '@faker-js/faker'
-import app from '../../api/index'
-import Todo from '../../models/Todo'
+import app from '../../src/api/index'
+import Todo from '../../src/models/Todo'
 import { clearModelCollection } from '../helper/dbHelper'
-import { generateAccessToken } from '../../modules/jwt/index'
+import { generateAccessToken } from '../../src/shared/jwtHelper'
 
 describe('api/todo', () => {
     beforeEach(async () => {

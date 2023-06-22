@@ -4,7 +4,7 @@ import User from './User'
 
 const bcrypt = require('bcryptjs')
 
-const jwt = require('../modules/jwt/index')
+const jwt = require('../shared/jwtHelper/index')
 
 class UserDAO {
     listUsers() {
