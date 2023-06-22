@@ -1,12 +1,14 @@
 import { connect } from 'mongoose'
 import { url } from './db.config'
 
-const connectDB = async () => {
+const connectDB = async (callback) => {
     try {
         await connect(url, {
             useNewUrlParser: true,
             useUnifiedTopology: true
         })
+
+        callback()
     } catch (err) {
         console.error(`Error: ${err}`)
 

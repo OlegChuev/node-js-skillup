@@ -12,9 +12,9 @@ export const signIn = async (req, res) => {
 
 export const signUp = async (req, res) => {
     try {
-        const result = await userService.signUpUser(req.body)
+        await userService.signUpUser(req.body)
 
-        res.status(200).json(result)
+        res.status(200).json({ success: 'Account created' })
     } catch (error) {
         res.status(401).json({ error: error.message })
     }

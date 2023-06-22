@@ -11,10 +11,10 @@ export const listTodos = async () => {
 }
 
 export const getTodo = async (params) => {
-    try {
-        const { id } = params
+    const { id } = params
 
-        const todo = await todoRepository.get(id)
+    try {
+        const todo = await todoRepository.get({ _id: id })
 
         return todo
     } catch (error) {
@@ -33,9 +33,9 @@ export const createTodo = async (params) => {
 }
 
 export const updateTodo = async (params) => {
-    try {
-        const { id } = params
+    const { id } = params
 
+    try {
         const todo = await todoRepository.update(id, params)
 
         return todo
@@ -52,6 +52,18 @@ export const getRandom = async () => {
         const data = await response.json()
 
         return data
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
+export const destroyTodo = async (params) => {
+    const { id } = params
+
+    try {
+        const todo = await todoRepository.destroy(id)
+
+        return todo
     } catch (error) {
         throw new Error(error.message)
     }

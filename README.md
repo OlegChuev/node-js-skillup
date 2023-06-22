@@ -24,3 +24,9 @@ These instructions will help you set up the development environment for the proj
 `docker compose up -d`
 
 The application should now be running at `http://localhost:3000`.
+
+## Testing
+
+To run tests use the following command:
+
+`docker compose run --rm web npm test`

@@ -2,6 +2,7 @@ import Todo from '../models/Todo'
 
 export const create = (params) => {
     const todo = new Todo(params)
+
     return todo.save()
 }
 
