@@ -1,15 +1,12 @@
-import UserDAO from '../models/UserDAO'
-
-const userDAO = new UserDAO()
+const userRepository = require('../services/userService')
 
 // eslint-disable-next-line import/prefer-default-export
-export const list = (_req, res) => {
-    userDAO
-        .listUsers()
-        .then((users) => {
-            res.status(200).json(users)
-        })
-        .catch((error) => {
-            res.status(404).json({ error: error.message })
-        })
+export const list = async (req, res) => {
+    try {
+        const result = await userRepository.listAllUsers()
+
+        res.status(200).json(result)
+    } catch (error) {
+        res.status(404).json({ error: error.message })
+    }
 }
