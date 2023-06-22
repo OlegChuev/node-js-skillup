@@ -1,38 +1,24 @@
-const express = require('express')
+import mongoose from 'mongoose'
+import app from './app'
 
-const app = express()
-const bodyParser = require('body-parser')
-const { errors } = require('celebrate')
-const cookieParser = require('cookie-parser')
-const connectDB = require('../../config/connectDB').default
-const routes = require('../routes/index')
+const config = require('../../config')
 
-// cookie-parser
-app.use(cookieParser('secret'))
+let server
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
-
-app.use((req, res, next) => {
-    next()
-})
-
-// Connect to DB
-connectDB(() => {
+mongoose.connect(config.url).then(() => {
     if (process.env.NODE_ENV === 'test') return
 
     console.log('Connected to the DB')
 
-    const PORT = process.env.PORT || 3000
-
-    app.listen(PORT, () => {
-        console.log(`Server is running and listening on port ${PORT}`)
+    server = app.listen(config.port, () => {
+        console.log(`Listening to port ${config.port}`)
     })
 })
 
-app.use('/', routes)
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received')
 
-// celebrate error handler
-app.use(errors())
+    if (server) server.close()
+})
 
-module.exports = app
+export default app
