@@ -1,6 +1,6 @@
-import mongoose from 'mongoose'
+const mongoose = require('mongoose')
 
-export const todoSchema = mongoose.Schema({
+const todoSchema = mongoose.Schema({
     title: {
         type: String,
         required: true
