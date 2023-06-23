@@ -7,6 +7,6 @@ const router = express.Router()
 
 router
     .post('/sign_in', userValidator.auth, authController.signIn)
-    .post('/sign_up', userValidator.auth, authController.signUp)
+    .post('/sign_up', userValidator.signIn, authController.signUp)
 
 module.exports = router

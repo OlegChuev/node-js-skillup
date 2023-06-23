@@ -9,7 +9,7 @@ export const listAllUsers = async () => {
 }
 
 export const signUpUser = async (params) => {
-    const { username, password } = params
+    const { username, password, email } = params
 
     const saltRounds = 10
     const salt = await bcrypt.genSalt(saltRounds)
@@ -17,7 +17,8 @@ export const signUpUser = async (params) => {
 
     const newUser = await userRepository.create({
         username,
-        password: hash
+        password: hash,
+        email
     })
 
     return newUser

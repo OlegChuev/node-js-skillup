@@ -14,6 +14,6 @@ router
     .delete('/:id', verifyJWT, todoValidator.destroy, todoController.destroy)
     .put('/', verifyJWT, todoValidator.put, todoController.update)
     .get('/random/seed', verifyJWT, todoController.seed)
-    .get('/random/activity', verifyJWT, todoController.getRandom)
+    .get('/random/activity', verifyJWT, todoController.createRandom)
 
 module.exports = router

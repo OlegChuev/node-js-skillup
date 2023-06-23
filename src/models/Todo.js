@@ -14,8 +14,8 @@ const todoSchema = mongoose.Schema({
         required: true,
         default: false
     },
-    username: {
-        type: String,
+    userIds: {
+        type: Array,
         required: true
     }
 })

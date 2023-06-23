@@ -8,11 +8,12 @@ const verifyJWT = (req, res, next) => {
 
     const token = authHeader.split(' ')[1];
 
-    jwtHelper.verifyAccessToken(token, (err, _decoded) => {
-      if (err)
-          return res.status(403).json({ message: jwtHelper.FORBIDDEN })
+    jwtHelper.verifyAccessToken(token, (err, decoded) => {
+        if (err)
+            return res.status(403).json({ message: jwtHelper.FORBIDDEN })
 
-      next()
+        req.userId = decoded.user._id;
+        next()
   })
 }
 

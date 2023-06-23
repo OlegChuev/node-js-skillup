@@ -1,34 +1,37 @@
 const todoRepository = require('../repository/todoRepository')
 
-export const listTodos = async () => {
-    const todos = await todoRepository.list()
+export const listTodos = async (userId) => {
+    const todos = await todoRepository.list({ userIds: userId })
 
     return todos
 }
 
-export const getTodo = async (params) => {
+export const getTodo = async (userId, params) => {
     const { id } = params
 
-    const todo = await todoRepository.get({ _id: id })
+    const todo = await todoRepository.get({ _id: id, userIds: userId })
 
     return todo
 }
 
-export const createTodo = async (params) => {
-    const todo = await todoRepository.create(params)
+export const createTodo = async (userId, params) => {
+    const todo = await todoRepository.create({ ...params, userIds: userId })
 
     return todo
 }
 
-export const updateTodo = async (params) => {
+export const updateTodo = async (userId, params) => {
     const { id } = params
 
-    const todo = await todoRepository.update(id, params)
+    const todo = await todoRepository.update(
+        { userIds: userId, _id: id },
+        params
+    )
 
     return todo
 }
 
-export const getRandom = async () => {
+export const createRandom = async (userId) => {
     const url = 'https://www.boredapi.com/api/activity'
 
     const response = await fetch(url)
@@ -37,7 +40,7 @@ export const getRandom = async () => {
     const params = {
         description: data.activity,
         title: data.activity,
-        username: 'current_user',
+        userIds: [userId],
         isDone: false
     }
 
@@ -46,23 +49,27 @@ export const getRandom = async () => {
     return todo
 }
 
-export const destroyTodo = async (params) => {
+export const destroyTodo = async (userId, params) => {
     const { id } = params
-    const todo = await todoRepository.destroy(id)
+    const todo = await todoRepository.destroy({ id, userIds: userId })
 
     return todo
 }
 
-export const seedTodos = async () => {
+export const seedTodos = async (userId) => {
     const data = [
         {
             title: 'firstTodo',
             description: 'some text',
             isDone: 'false',
-            username: 'someUserName'
+            userIds: userId
         }
     ]
     const todos = await todoRepository.insertMany(data)
 
     return todos
 }
+
+// export const shareById = async (currentUserId, params) => {
+//     const { email, todoId } = params
+// }

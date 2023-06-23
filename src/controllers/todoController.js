@@ -2,7 +2,7 @@ const todoService = require('../services/todoService')
 
 export const list = async (req, res) => {
     try {
-        const result = await todoService.listTodos()
+        const result = await todoService.listTodos(req.userId)
 
         res.status(200).json(result)
     } catch (error) {
@@ -10,9 +10,9 @@ export const list = async (req, res) => {
     }
 }
 
-export const getRandom = async (req, res) => {
+export const createRandom = async (req, res) => {
     try {
-        const result = await todoService.getRandom()
+        const result = await todoService.createRandom(req.userId)
 
         res.status(200).json(result)
     } catch (error) {
@@ -22,7 +22,7 @@ export const getRandom = async (req, res) => {
 
 export const get = async (req, res) => {
     try {
-        const result = await todoService.getTodo(req.params)
+        const result = await todoService.getTodo(req.userId, req.params)
 
         res.status(200).json(result)
     } catch (error) {
@@ -32,7 +32,7 @@ export const get = async (req, res) => {
 
 export const destroy = async (req, res) => {
     try {
-        const result = await todoService.destroyTodo(req.params)
+        const result = await todoService.destroyTodo(req.userId, req.params)
 
         res.status(200).json(result)
     } catch (error) {
@@ -42,7 +42,7 @@ export const destroy = async (req, res) => {
 
 export const post = async (req, res) => {
     try {
-        const result = await todoService.createTodo(req.body)
+        const result = await todoService.createTodo(req.userId, req.body)
 
         res.status(200).json(result)
     } catch (error) {
@@ -52,7 +52,7 @@ export const post = async (req, res) => {
 
 export const update = async (req, res) => {
     try {
-        const result = await todoService.updateTodo(req.body)
+        const result = await todoService.updateTodo(req.userId, req.body)
 
         res.status(200).json(result)
     } catch (error) {

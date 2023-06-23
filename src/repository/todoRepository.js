@@ -10,16 +10,16 @@ export const get = async (params) => {
     return Todo.findOne(params)
 }
 
-export const list = async () => {
-    return Todo.find()
+export const list = async (filter) => {
+    return Todo.find(filter)
 }
 
-export const destroy = async (id) => {
-    return Todo.findByIdAndDelete(id)
+export const destroy = async (filter) => {
+    return Todo.findOneAndDelete(filter)
 }
 
-export const update = async (id, data) => {
-    return Todo.findByIdAndUpdate(id, data)
+export const update = async (filter, data) => {
+    return Todo.findOneAndUpdate(filter, data)
 }
 
 export const insertMany = async (data) => {
