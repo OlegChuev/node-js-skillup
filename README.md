@@ -19,7 +19,11 @@ These instructions will help you set up the development environment for the proj
 
 `cd node-js-skillup`
 
-3. Build and start the Docker containers:
+3. Create .env from .env.example and edit required variables.
+
+`cp .env.example .env`
+
+4. Build and start the Docker containers:
 
 `docker compose up -d`
 

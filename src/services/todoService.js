@@ -51,7 +51,16 @@ export const getRandom = async () => {
         const response = await fetch(url)
         const data = await response.json()
 
-        return data
+        const params = {
+            description: data.activity,
+            title: data.activity,
+            username: 'current_user',
+            isDone: false
+        }
+
+        const todo = await todoRepository.create(params)
+
+        return todo
     } catch (error) {
         throw new Error(error.message)
     }
