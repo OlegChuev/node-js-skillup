@@ -5,6 +5,8 @@ const config = require('../../config')
 
 let server
 
+// Used as a reference:
+// https://github.com/saisilinus/node-express-mongoose-typescript-boilerplate/blob/master/src/index.ts
 mongoose.connect(config.url).then(() => {
     if (process.env.NODE_ENV === 'test') return
 
