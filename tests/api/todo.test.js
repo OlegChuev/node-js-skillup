@@ -17,7 +17,7 @@ describe('api/todo', () => {
         await clearModelCollection(Todo)
     })
 
-    describe('POST', () => {
+    describe('POST /', () => {
         it('respond with valid HTTP status code and create todo', async () => {
             const newUser = new UserFactory()
             const user = await newUser.save()
@@ -43,8 +43,8 @@ describe('api/todo', () => {
         })
     })
 
-    describe('GET all', () => {
-        it('respond with valid HTTP status code and lists all todos', async () => {
+    describe('GET /', () => {
+        it('return all todos', async () => {
             const newUser = new UserFactory()
             const user = await newUser.save()
 
@@ -68,7 +68,7 @@ describe('api/todo', () => {
     })
 
     describe('GET /:ID', () => {
-        it('respond with valid HTTP status code and return todo by id', async () => {
+        it('return todo by id', async () => {
             const newUser = new UserFactory()
             const user = await newUser.save()
 
@@ -83,7 +83,7 @@ describe('api/todo', () => {
             expect(response.body.description).toBe(todo.description)
         })
 
-        it('respond with valid HTTP status code and return shared todo', async () => {
+        it('return shared todo by id', async () => {
             const newUser = new UserFactory()
             const user = await newUser.save()
 
@@ -99,8 +99,8 @@ describe('api/todo', () => {
         })
     })
 
-    describe('DELETE', () => {
-        it('respond with valid HTTP status code and destroy todo', async () => {
+    describe('DELETE /:ID', () => {
+        it('destroy todo by id', async () => {
             const newUser = new UserFactory()
             const user = await newUser.save()
 
@@ -115,7 +115,22 @@ describe('api/todo', () => {
             expect(await Todo.find()).toHaveLength(0)
         })
 
-        it('respond with invalid HTTP status code if user doesnt have access to todo', async () => {
+        it('destroy shared todo by id', async () => {
+            const newUser = new UserFactory()
+            const user = await newUser.save()
+
+            const newTodo = new TodoFactory({ sharedWith: [user.id] })
+            const todo = await newTodo.save()
+
+            const response = await request(app)
+                .delete(`/api/todo/${todo.id}`)
+                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+
+            expect(response.status).toBe(200)
+            expect(await Todo.find()).toHaveLength(0)
+        })
+
+        it("return error and doesn't destroy todo since user doesn't have access", async () => {
             const newUser = new UserFactory()
             const user = await newUser.save()
 
@@ -126,41 +141,101 @@ describe('api/todo', () => {
                 .delete(`/api/todo/${todo.id}`)
                 .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
 
-            expect(response.status).toBe(200)
+            expect(response.status).toBe(401)
             expect(await Todo.find()).toHaveLength(1)
         })
     })
 
-    describe('PUT', () => {
-        it('respond with valid HTTP status code and update todo', async () => {
+    describe('PUT /', () => {
+        it('update todo by id', async () => {
             const newUser = new UserFactory()
             const user = await newUser.save()
 
-            const starterTodo = {
-                title: faker.location.city(),
-                description: faker.location.city(),
-                isDone: false,
-                userId: user.id
-            }
-            const todo = new Todo(starterTodo)
-            const savedTodo = await todo.save()
-
-            expect(await Todo.find()).toHaveLength(1)
+            const newTodo = new TodoFactory({ userId: user.id })
+            const todo = await newTodo.save()
 
             const newDescription = faker.internet.userName()
 
             const response = await request(app)
                 .put(`/api/todo`)
                 .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
-
                 .send({
-                    id: savedTodo.id,
+                    id: todo.id,
                     description: newDescription
                 })
 
             expect(response.status).toBe(200)
-            const todoAfterUpdate = await Todo.findById(savedTodo.id)
+            const todoAfterUpdate = await Todo.findById(todo.id)
             expect(todoAfterUpdate.description).toBe(newDescription)
+        })
+
+        it('update shared todo by id', async () => {
+            const newUser = new UserFactory()
+            const user = await newUser.save()
+
+            const newTodo = new TodoFactory({ sharedWith: [user.id] })
+            const todo = await newTodo.save()
+
+            const newDescription = faker.internet.userName()
+
+            const response = await request(app)
+                .put(`/api/todo`)
+                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .send({
+                    id: todo.id,
+                    description: newDescription
+                })
+
+            expect(response.status).toBe(200)
+            const todoAfterUpdate = await Todo.findById(todo.id)
+            expect(todoAfterUpdate.description).toBe(newDescription)
+        })
+    })
+
+    describe('POST /:id/share', () => {
+        it('share todo to another user', async () => {
+            const newOwner = new UserFactory()
+            const todoOwner = await newOwner.save()
+
+            const newTodo = new TodoFactory({ userId: todoOwner.id })
+            const todo = await newTodo.save()
+
+            const newUser = new UserFactory()
+            const user = await newUser.save()
+
+            const response = await request(app)
+                .post(`/api/todo/${todo.id}/share`)
+                .set(
+                    'Authorization',
+                    `Bearer ${generateAccessToken({ user: todoOwner })}`
+                )
+                .send({ email: user.email })
+
+            expect(response.status).toBe(200)
+
+            const todoAfterSharing = await Todo.findById(todo.id)
+            expect(todoAfterSharing.sharedWith).toEqual([user.id])
+        })
+
+        it("return error if another user doesn't exist", async () => {
+            const newOwner = new UserFactory()
+            const todoOwner = await newOwner.save()
+
+            const newTodo = new TodoFactory({ userId: todoOwner.id })
+            const todo = await newTodo.save()
+
+            const response = await request(app)
+                .post(`/api/todo/${todo.id}/share`)
+                .set(
+                    'Authorization',
+                    `Bearer ${generateAccessToken({ user: todoOwner })}`
+                )
+                .send({ email: faker.internet.email() })
+
+            expect(response.status).toBe(401)
+
+            const todoAfterSharing = await Todo.findById(todo.id)
+            expect(todoAfterSharing.sharedWith).toEqual([])
         })
     })
 })

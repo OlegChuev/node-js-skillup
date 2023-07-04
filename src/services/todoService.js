@@ -62,6 +62,9 @@ export const destroyTodo = async (userId, params) => {
         $or: [{ userId }, { sharedWith: { $in: [userId] } }]
     })
 
+    if (!todo)
+        throw new Error("Todo doesn't exist or you don't have access to it")
+
     return todo
 }
 

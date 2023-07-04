@@ -6,7 +6,7 @@ export const list = async (req, res) => {
 
         res.status(200).json(result)
     } catch (error) {
-        res.status(404).json({ error: error.message })
+        res.status(401).json({ error: error.message })
     }
 }
 
@@ -16,7 +16,7 @@ export const createRandom = async (req, res) => {
 
         res.status(200).json(result)
     } catch (error) {
-        res.status(404).json({ error: error.message })
+        res.status(401).json({ error: error.message })
     }
 }
 
@@ -26,7 +26,7 @@ export const get = async (req, res) => {
 
         res.status(200).json(result)
     } catch (error) {
-        res.status(404).json({ error: error.message })
+        res.status(401).json({ error: error.message })
     }
 }
 
@@ -36,7 +36,7 @@ export const destroy = async (req, res) => {
 
         res.status(200).json(result)
     } catch (error) {
-        res.status(404).json({ error: error.message })
+        res.status(401).json({ error: error.message })
     }
 }
 
@@ -46,7 +46,7 @@ export const post = async (req, res) => {
 
         res.status(200).json(result)
     } catch (error) {
-        res.status(404).json({ error: error.message })
+        res.status(401).json({ error: error.message })
     }
 }
 
@@ -56,7 +56,7 @@ export const update = async (req, res) => {
 
         res.status(200).json(result)
     } catch (error) {
-        res.status(404).json({ error: error.message })
+        res.status(401).json({ error: error.message })
     }
 }
 
@@ -66,7 +66,7 @@ export const seed = async (req, res) => {
 
         res.status(200).json({ status: 'done' })
     } catch (error) {
-        res.status(404).json({ error: error.message })
+        res.status(401).json({ error: error.message })
     }
 }
 
@@ -80,6 +80,6 @@ export const share = async (req, res) => {
 
         res.status(200).json({ status: 'done', result })
     } catch (error) {
-        res.status(404).json({ error: error.message })
+        res.status(401).json({ error: error.message })
     }
 }

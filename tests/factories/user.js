@@ -18,7 +18,7 @@ class UserFactory {
     async getPasswordHash() {
         const saltRounds = 10
         const salt = await bcrypt.genSalt(saltRounds)
-        const hash = await bcrypt.hash(this.password, salt)
+        const hash = await bcrypt.hash(this.getPassword(), salt)
 
         return hash
     }

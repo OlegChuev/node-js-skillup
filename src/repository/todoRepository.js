@@ -1,13 +1,13 @@
 import Todo from '../models/Todo'
 
-export const create = async (params) => {
-    const todo = new Todo(params)
+export const create = async (data) => {
+    const todo = new Todo(data)
 
     return todo.save()
 }
 
-export const get = async (params) => {
-    return Todo.findOne(params)
+export const get = async (filter) => {
+    return Todo.findOne(filter)
 }
 
 export const list = async (filter) => {
