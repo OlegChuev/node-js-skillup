@@ -30,3 +30,12 @@ export const put = celebrate({
         isDone: Joi.boolean().optional()
     })
 })
+
+export const share = celebrate({
+    body: Joi.object({
+        email: Joi.string().required().email()
+    }),
+    params: Joi.object({
+        id: Joi.string().required()
+    })
+})

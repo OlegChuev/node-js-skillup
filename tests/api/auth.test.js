@@ -5,7 +5,7 @@ import app from '../../src/api/index'
 import User from '../../src/models/User'
 import { clearModelCollection } from '../helper/dbHelper'
 
-const bcrypt = require('bcryptjs')
+const UserFactory = require('../factories/user')
 
 describe('POST auth/sign_in', () => {
     beforeEach(async () => {
@@ -23,14 +23,12 @@ describe('POST auth/sign_in', () => {
         }
 
         it('responds with valid HTTP status code and sign in user', async () => {
-            const user = new User({
-                password: bcrypt.hashSync(
-                    params.password,
-                    bcrypt.genSaltSync(10)
-                ),
-                username: params.username
+            const newUser = new UserFactory({
+                username: params.username,
+                password: params.password
             })
-            await user.save()
+
+            await newUser.save()
 
             const response = await request(app)
                 .post('/auth/sign_in')
@@ -63,17 +61,10 @@ describe('POST auth/sign_in', () => {
             password: faker.internet.password()
         }
 
-        beforeEach(() => {
-            new User({
-                password: bcrypt.hashSync(
-                    faker.internet.password(),
-                    bcrypt.genSaltSync(10)
-                ),
-                username: params.username
-            }).save()
-        })
-
         it('responds with 401 error', async () => {
+            const newUser = new UserFactory({ username: params.username })
+            await newUser.save()
+
             const response = await request(app)
                 .post('/auth/sign_in')
                 .send(params)
@@ -96,7 +87,8 @@ describe('POST auth/sign_up', () => {
     describe('with valid params', () => {
         const params = {
             username: faker.internet.userName(),
-            password: faker.internet.password()
+            password: faker.internet.password(),
+            email: faker.internet.email()
         }
 
         it('respond with valid HTTP status code and creates new user', async () => {
@@ -113,7 +105,8 @@ describe('POST auth/sign_up', () => {
     describe('with invalid params', () => {
         const invalidSignUpParams = {
             username: faker.internet.userName(),
-            password: 'a'
+            password: 'a',
+            email: 'asd'
         }
 
         it('respond with invalid HTTP status code and returns validation error', async () => {

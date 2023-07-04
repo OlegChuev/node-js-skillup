@@ -1,7 +1,10 @@
 const todoRepository = require('../repository/todoRepository')
+const userRepository = require('../repository/userRepository')
 
 export const listTodos = async (userId) => {
-    const todos = await todoRepository.list({ userIds: userId })
+    const todos = await todoRepository.list({
+        $or: [{ userId }, { sharedWith: { $in: [userId] } }]
+    })
 
     return todos
 }
@@ -9,13 +12,16 @@ export const listTodos = async (userId) => {
 export const getTodo = async (userId, params) => {
     const { id } = params
 
-    const todo = await todoRepository.get({ _id: id, userIds: userId })
+    const todo = await todoRepository.get({
+        _id: id,
+        $or: [{ userId }, { sharedWith: { $in: [userId] } }]
+    })
 
     return todo
 }
 
 export const createTodo = async (userId, params) => {
-    const todo = await todoRepository.create({ ...params, userIds: userId })
+    const todo = await todoRepository.create({ ...params, userId })
 
     return todo
 }
@@ -24,7 +30,7 @@ export const updateTodo = async (userId, params) => {
     const { id } = params
 
     const todo = await todoRepository.update(
-        { userIds: userId, _id: id },
+        { _id: id, $or: [{ userId }, { sharedWith: { $in: [userId] } }] },
         params
     )
 
@@ -40,7 +46,7 @@ export const createRandom = async (userId) => {
     const params = {
         description: data.activity,
         title: data.activity,
-        userIds: [userId],
+        userId,
         isDone: false
     }
 
@@ -51,7 +57,10 @@ export const createRandom = async (userId) => {
 
 export const destroyTodo = async (userId, params) => {
     const { id } = params
-    const todo = await todoRepository.destroy({ id, userIds: userId })
+    const todo = await todoRepository.destroy({
+        _id: id,
+        $or: [{ userId }, { sharedWith: { $in: [userId] } }]
+    })
 
     return todo
 }
@@ -62,7 +71,7 @@ export const seedTodos = async (userId) => {
             title: 'firstTodo',
             description: 'some text',
             isDone: 'false',
-            userIds: userId
+            userId
         }
     ]
     const todos = await todoRepository.insertMany(data)
@@ -70,6 +79,17 @@ export const seedTodos = async (userId) => {
     return todos
 }
 
-// export const shareById = async (currentUserId, params) => {
-//     const { email, todoId } = params
-// }
+export const giveAccessToUser = async (userId, params, body) => {
+    const { id } = params
+    const { email } = body
+
+    const user = await userRepository.get({ email })
+    if (!user) throw new Error("User doesn't exist")
+
+    const todo = await todoRepository.update(
+        { _id: id, $or: [{ userId }, { sharedWith: { $in: [userId] } }] },
+        { $addToSet: { sharedWith: user.id } }
+    )
+
+    return todo
+}
