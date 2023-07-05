@@ -1,3 +1,6 @@
+import NotFoundError from '../errors/notFoundError'
+import ForbiddenError from '../errors/forbiddenError'
+
 const todoRepository = require('../repository/todoRepository')
 const userRepository = require('../repository/userRepository')
 
@@ -17,6 +20,11 @@ export const getTodo = async (userId, params) => {
         $or: [{ userId }, { sharedWith: { $in: [userId] } }]
     })
 
+    if (!todo)
+        throw new NotFoundError(
+            "Todo doesn't exist or you don't have access to it"
+        )
+
     return todo
 }
 
@@ -33,6 +41,11 @@ export const updateTodo = async (userId, params) => {
         { _id: id, $or: [{ userId }, { sharedWith: { $in: [userId] } }] },
         params
     )
+
+    if (!todo)
+        throw new NotFoundError(
+            "Todo doesn't exist or you don't have access to it"
+        )
 
     return todo
 }
@@ -63,7 +76,9 @@ export const destroyTodo = async (userId, params) => {
     })
 
     if (!todo)
-        throw new Error("Todo doesn't exist or you don't have access to it")
+        throw new NotFoundError(
+            "Todo doesn't exist or you don't have access to it"
+        )
 
     return todo
 }
@@ -87,7 +102,10 @@ export const giveAccessToUser = async (userId, params, body) => {
     const { email } = body
 
     const user = await userRepository.get({ email })
-    if (!user) throw new Error("User doesn't exist")
+    if (!user) throw new NotFoundError(`User by email ${email} doesn't exist.`)
+
+    if (user._id == userId)
+        throw new ForbiddenError('You cannot share todo with your account')
 
     const todo = await todoRepository.update(
         { _id: id, $or: [{ userId }, { sharedWith: { $in: [userId] } }] },

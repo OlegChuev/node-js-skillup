@@ -5,6 +5,8 @@ const bodyParser = require('body-parser')
 const { errors } = require('celebrate')
 const cookieParser = require('cookie-parser')
 
+const { errorHandler, errorConverter } = require('../middleware/errorHandler')
+
 const routes = require('../routes/index')
 
 // cookie-parser
@@ -19,7 +21,13 @@ app.use((req, res, next) => {
 
 app.use('/', routes)
 
-// celebrate error handler
+// convert error to ApiError, if needed
+app.use(errorConverter)
+
+// Handle error
+app.use(errorHandler)
+
+// Error handlers
 app.use(errors())
 
 module.exports = app

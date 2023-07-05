@@ -141,7 +141,7 @@ describe('api/todo', () => {
                 .delete(`/api/todo/${todo.id}`)
                 .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
 
-            expect(response.status).toBe(401)
+            expect(response.status).toBe(404)
             expect(await Todo.find()).toHaveLength(1)
         })
     })
@@ -232,8 +232,28 @@ describe('api/todo', () => {
                 )
                 .send({ email: faker.internet.email() })
 
-            expect(response.status).toBe(401)
+            expect(response.status).toBe(404)
 
+            const todoAfterSharing = await Todo.findById(todo.id)
+            expect(todoAfterSharing.sharedWith).toEqual([])
+        })
+
+        it('return error if user tries to share todo with his account', async () => {
+            const newOwner = new UserFactory()
+            const todoOwner = await newOwner.save()
+
+            const newTodo = new TodoFactory({ userId: todoOwner.id })
+            const todo = await newTodo.save()
+
+            const response = await request(app)
+                .post(`/api/todo/${todo.id}/share`)
+                .set(
+                    'Authorization',
+                    `Bearer ${generateAccessToken({ user: todoOwner })}`
+                )
+                .send({ email: todoOwner.email })
+
+            expect(response.status).toBe(403)
             const todoAfterSharing = await Todo.findById(todo.id)
             expect(todoAfterSharing.sharedWith).toEqual([])
         })

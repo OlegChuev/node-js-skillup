@@ -1,3 +1,5 @@
+import NotAuthorizedError from '../errors/notAuthorizedError'
+
 const bcrypt = require('bcryptjs')
 const jwt = require('../shared/jwtHelper/index')
 const userRepository = require('../repository/userRepository')
@@ -29,11 +31,12 @@ export const signInUser = async (params) => {
 
     const user = await userRepository.get({ username })
 
-    if (!user) throw new Error(jwt.UNAUTHENTICATED)
+    if (!user) throw new NotAuthorizedError('Username or password is incorrect')
 
     const compareResult = bcrypt.compareSync(password, user.password)
 
-    if (!compareResult) throw new Error(jwt.UNAUTHENTICATED)
+    if (!compareResult)
+        throw new NotAuthorizedError('Username or password is incorrect')
 
     return {
         success: jwt.AUTHENTICATED,

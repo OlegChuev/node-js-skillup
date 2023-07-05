@@ -1,85 +1,85 @@
 const todoService = require('../services/todoService')
 
-export const list = async (req, res) => {
+export const list = async (req, res, next) => {
     try {
-        const result = await todoService.listTodos(req.userId)
+        const result = await todoService.listTodos(req.user._id)
 
         res.status(200).json(result)
     } catch (error) {
-        res.status(401).json({ error: error.message })
+        next(error)
     }
 }
 
-export const createRandom = async (req, res) => {
+export const createRandom = async (req, res, next) => {
     try {
-        const result = await todoService.createRandom(req.userId)
+        const result = await todoService.createRandom(req.user._id)
 
         res.status(200).json(result)
     } catch (error) {
-        res.status(401).json({ error: error.message })
+        next(error)
     }
 }
 
-export const get = async (req, res) => {
+export const get = async (req, res, next) => {
     try {
-        const result = await todoService.getTodo(req.userId, req.params)
+        const result = await todoService.getTodo(req.user._id, req.params)
 
         res.status(200).json(result)
     } catch (error) {
-        res.status(401).json({ error: error.message })
+        next(error)
     }
 }
 
-export const destroy = async (req, res) => {
+export const destroy = async (req, res, next) => {
     try {
-        const result = await todoService.destroyTodo(req.userId, req.params)
+        const result = await todoService.destroyTodo(req.user._id, req.params)
 
         res.status(200).json(result)
     } catch (error) {
-        res.status(401).json({ error: error.message })
+        next(error)
     }
 }
 
-export const post = async (req, res) => {
+export const post = async (req, res, next) => {
     try {
-        const result = await todoService.createTodo(req.userId, req.body)
+        const result = await todoService.createTodo(req.user._id, req.body)
 
         res.status(200).json(result)
     } catch (error) {
-        res.status(401).json({ error: error.message })
+        next(error)
     }
 }
 
-export const update = async (req, res) => {
+export const update = async (req, res, next) => {
     try {
-        const result = await todoService.updateTodo(req.userId, req.body)
+        const result = await todoService.updateTodo(req.user._id, req.body)
 
         res.status(200).json(result)
     } catch (error) {
-        res.status(401).json({ error: error.message })
+        next(error)
     }
 }
 
-export const seed = async (req, res) => {
+export const seed = async (req, res, next) => {
     try {
-        await todoService.seedTodos(req.userId)
+        await todoService.seedTodos(req.user._id)
 
         res.status(200).json({ status: 'done' })
     } catch (error) {
-        res.status(401).json({ error: error.message })
+        next(error)
     }
 }
 
-export const share = async (req, res) => {
+export const share = async (req, res, next) => {
     try {
         const result = await todoService.giveAccessToUser(
-            req.userId,
+            req.user._id,
             req.params,
             req.body
         )
 
         res.status(200).json({ status: 'done', result })
     } catch (error) {
-        res.status(401).json({ error: error.message })
+        next(error)
     }
 }

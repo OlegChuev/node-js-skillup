@@ -51,7 +51,7 @@ describe('POST auth/sign_in', () => {
                 .send(params)
 
             expect(response.status).toBe(401)
-            expect(response.body).toEqual({ error: 'Unauthenticated' })
+            expect(response.body.message).toEqual('Unauthenticated')
         })
     })
 
@@ -70,7 +70,7 @@ describe('POST auth/sign_in', () => {
                 .send(params)
 
             expect(response.status).toBe(401)
-            expect(response.body).toEqual({ error: 'Unauthenticated' })
+            expect(response.body.message).toEqual('Unauthenticated')
         })
     })
 })
@@ -114,7 +114,7 @@ describe('POST auth/sign_up', () => {
                 .post('/auth/sign_up')
                 .send(invalidSignUpParams)
 
-            expect(response.status).toBe(400)
+            expect(response.status).toBe(422)
         })
     })
 })
