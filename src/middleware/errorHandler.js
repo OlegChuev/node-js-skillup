@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { StatusCodes } from 'http-status-codes'
 import mongoose from 'mongoose'
 import ApiError from '../errors/apiError'
 
@@ -16,9 +18,11 @@ export const errorConverter = (err, _req, _res, next) => {
     let statusCode
 
     if (!(error instanceof ApiError)) {
-        if (error instanceof mongoose.Error) statusCode = 400
-        else if (isCelebrateError(error)) statusCode = 422
-        else statusCode = 500
+        if (error instanceof mongoose.Error)
+            statusCode = StatusCodes.BAD_REQUEST
+        else if (isCelebrateError(error))
+            statusCode = StatusCodes.UNPROCESSABLE_ENTITY
+        else statusCode = StatusCodes.INTERNAL_SERVER_ERROR
 
         const message = error.message || 'Unknown error'
 

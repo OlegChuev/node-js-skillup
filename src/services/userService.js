@@ -39,7 +39,7 @@ export const signInUser = async (params) => {
         throw new NotAuthorizedError('Username or password is incorrect')
 
     return {
-        success: jwt.AUTHENTICATED,
+        success: 'Authenticated',
         access_token: jwt.generateAccessToken({ user })
     }
 }

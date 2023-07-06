@@ -51,7 +51,7 @@ describe('POST auth/sign_in', () => {
                 .send(params)
 
             expect(response.status).toBe(401)
-            expect(response.body.message).toEqual('Unauthenticated')
+            expect(response.body.message).toEqual('Unauthorized')
         })
     })
 
@@ -70,7 +70,7 @@ describe('POST auth/sign_in', () => {
                 .send(params)
 
             expect(response.status).toBe(401)
-            expect(response.body.message).toEqual('Unauthenticated')
+            expect(response.body.message).toEqual('Unauthorized')
         })
     })
 })
