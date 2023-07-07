@@ -78,6 +78,7 @@ export const seedTodos = async (userId) => {
             title: 'firstTodo',
             description: 'some text',
             isDone: 'false',
+            isPrivate: true,
             userId
         }
     ]
@@ -93,7 +94,7 @@ export const giveAccessToUser = async (userId, params, body) => {
     const user = await userRepository.get({ email })
     if (!user) throw new NotFoundError(`User by email ${email} doesn't exist.`)
 
-    if (user._id == userId)
+    if (user.id === userId)
         throw new ForbiddenError('You cannot share todo with your account.')
 
     const todo = await todoRepository.get(userId, { _id: id })
@@ -127,7 +128,7 @@ export const changeOwnership = async (userId, params, body) => {
     const user = await userRepository.get({ email })
     if (!user) throw new NotFoundError(`User by email ${email} doesn't exist.`)
 
-    if (user._id == userId)
+    if (user.id === userId)
         throw new ForbiddenError('You cannot change ownership to your account.')
 
     const todo = await todoRepository.get(userId, { _id: id })
@@ -150,7 +151,7 @@ export const changeOwnership = async (userId, params, body) => {
     const result = await todoRepository.update(
         userId,
         { _id: id },
-        { userId: user._id }
+        { userId: user.id }
     )
 
     return result

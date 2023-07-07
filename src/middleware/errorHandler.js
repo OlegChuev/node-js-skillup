@@ -3,11 +3,9 @@ import { StatusCodes } from 'http-status-codes'
 import mongoose from 'mongoose'
 import ApiError from '../errors/apiError'
 
-/* eslint-disable no-unused-vars */
-const express = require('express')
 const { isCelebrateError } = require('celebrate')
 
-export const errorHandler = (error, req, res, next) => {
+export const errorHandler = (error, req, res, _next) => {
     res.header('Content-Type', 'application/json')
 
     res.status(error.statusCode).send(JSON.stringify(error.details()))
