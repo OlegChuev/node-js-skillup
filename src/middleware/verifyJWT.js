@@ -5,7 +5,7 @@ import ForbiddenError from '../errors/forbiddenError'
 
 const verifyJWT = (req, res, next) => {
     const authHeader = req.headers.authorization || req.headers.Authorization
-    debugger
+
     if (!authHeader?.startsWith('Bearer '))
         throw new NotAuthorizedError('Missed JWT token.')
 
