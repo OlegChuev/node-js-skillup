@@ -3,12 +3,13 @@ import { faker } from '@faker-js/faker'
 import Todo from '../../src/models/Todo'
 
 class TodoFactory {
-    constructor({ title, description, isDone, userId, sharedWith } = {}) {
+    constructor({ title, description, isDone, userId, sharedWith, isPrivate } = {}) {
         this.title = title || faker.location.city()
         this.description = description || faker.location.city()
         this.isDone = isDone || false
         this.userId = userId || faker.number.int(100)
         this.sharedWith = sharedWith || []
+        this.isPrivate = isPrivate || false
     }
 
     async save() {
@@ -17,7 +18,8 @@ class TodoFactory {
             description: this.description,
             isDone: this.isDone,
             userId: this.userId,
-            sharedWith: this.sharedWith
+            sharedWith: this.sharedWith,
+            isPrivate: this.isPrivate
         })
 
         const savedTodo = await newTodo.save()

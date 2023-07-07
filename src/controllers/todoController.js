@@ -83,3 +83,17 @@ export const share = async (req, res, next) => {
         next(error)
     }
 }
+
+export const changeOwnership = async (req, res, next) => {
+    try {
+        const result = await todoService.changeOwnership(
+            req.user._id,
+            req.params,
+            req.body
+        )
+
+        res.status(200).json({ status: 'done', result })
+    } catch (error) {
+        next(error)
+    }
+}

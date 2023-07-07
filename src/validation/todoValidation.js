@@ -26,12 +26,21 @@ export const put = celebrate({
         id: Joi.string().required(),
         title: Joi.string().optional(),
         description: Joi.string().optional(),
-        username: Joi.string().optional(),
-        isDone: Joi.boolean().optional()
+        isDone: Joi.boolean().optional(),
+        isPrivate: Joi.boolean().optional()
     })
 })
 
 export const share = celebrate({
+    body: Joi.object({
+        email: Joi.string().required().email()
+    }),
+    params: Joi.object({
+        id: Joi.string().required()
+    })
+})
+
+export const changeOwnership = celebrate({
     body: Joi.object({
         email: Joi.string().required().email()
     }),

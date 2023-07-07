@@ -5,9 +5,7 @@ const todoRepository = require('../repository/todoRepository')
 const userRepository = require('../repository/userRepository')
 
 export const listTodos = async (userId) => {
-    const todos = await todoRepository.list({
-        $or: [{ userId }, { sharedWith: { $in: [userId] } }]
-    })
+    const todos = await todoRepository.list(userId)
 
     return todos
 }
@@ -15,14 +13,11 @@ export const listTodos = async (userId) => {
 export const getTodo = async (userId, params) => {
     const { id } = params
 
-    const todo = await todoRepository.get({
-        _id: id,
-        $or: [{ userId }, { sharedWith: { $in: [userId] } }]
-    })
+    const todo = await todoRepository.get(userId, { _id: id })
 
     if (!todo)
         throw new NotFoundError(
-            "Todo doesn't exist or you don't have access to it"
+            "Todo doesn't exist or you don't have access to it."
         )
 
     return todo
@@ -37,14 +32,11 @@ export const createTodo = async (userId, params) => {
 export const updateTodo = async (userId, params) => {
     const { id } = params
 
-    const todo = await todoRepository.update(
-        { _id: id, $or: [{ userId }, { sharedWith: { $in: [userId] } }] },
-        params
-    )
+    const todo = await todoRepository.update(userId, { _id: id }, params)
 
     if (!todo)
         throw new NotFoundError(
-            "Todo doesn't exist or you don't have access to it"
+            "Todo doesn't exist or you don't have access to it."
         )
 
     return todo
@@ -70,14 +62,11 @@ export const createRandom = async (userId) => {
 
 export const destroyTodo = async (userId, params) => {
     const { id } = params
-    const todo = await todoRepository.destroy({
-        _id: id,
-        $or: [{ userId }, { sharedWith: { $in: [userId] } }]
-    })
+    const todo = await todoRepository.destroy(userId, { _id: id })
 
     if (!todo)
         throw new NotFoundError(
-            "Todo doesn't exist or you don't have access to it"
+            "Todo doesn't exist or you don't have access to it."
         )
 
     return todo
@@ -105,12 +94,64 @@ export const giveAccessToUser = async (userId, params, body) => {
     if (!user) throw new NotFoundError(`User by email ${email} doesn't exist.`)
 
     if (user._id == userId)
-        throw new ForbiddenError('You cannot share todo with your account')
+        throw new ForbiddenError('You cannot share todo with your account.')
 
-    const todo = await todoRepository.update(
-        { _id: id, $or: [{ userId }, { sharedWith: { $in: [userId] } }] },
+    const todo = await todoRepository.get(userId, { _id: id })
+
+    if (!todo)
+        throw new NotFoundError(
+            "Todo doesn't exist or you don't have access to it."
+        )
+
+    if (todo.isPrivate)
+        throw new ForbiddenError(
+            'You cannot share private todo. Set isPrivate to false firstly.'
+        )
+
+    if (todo.userId !== userId)
+        throw new ForbiddenError('You can only share your own todo.')
+
+    const result = await todoRepository.update(
+        userId,
+        { _id: id },
         { $addToSet: { sharedWith: user.id } }
     )
 
-    return todo
+    return result
+}
+
+export const changeOwnership = async (userId, params, body) => {
+    const { id } = params
+    const { email } = body
+
+    const user = await userRepository.get({ email })
+    if (!user) throw new NotFoundError(`User by email ${email} doesn't exist.`)
+
+    if (user._id == userId)
+        throw new ForbiddenError('You cannot change ownership to your account.')
+
+    const todo = await todoRepository.get(userId, { _id: id })
+
+    if (!todo)
+        throw new NotFoundError(
+            "Todo doesn't exist or you don't have access to it."
+        )
+
+    if (todo.isPrivate)
+        throw new ForbiddenError(
+            'You cannot change ownership of private todo. Set isPrivate to false firstly.'
+        )
+
+    if (todo.userId !== userId)
+        throw new ForbiddenError(
+            'You can change the ownership of only your own todo.'
+        )
+
+    const result = await todoRepository.update(
+        userId,
+        { _id: id },
+        { userId: user._id }
+    )
+
+    return result
 }

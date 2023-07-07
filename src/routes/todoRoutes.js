@@ -16,5 +16,11 @@ router
     .get('/random/seed', verifyJWT, todoController.seed)
     .get('/random/activity', verifyJWT, todoController.createRandom)
     .post('/:id/share', verifyJWT, todoValidator.share, todoController.share)
+    .post(
+        '/:id/change_ownership',
+        verifyJWT,
+        todoValidator.changeOwnership,
+        todoController.changeOwnership
+    )
 
 module.exports = router

@@ -6,20 +6,20 @@ export const create = async (data) => {
     return todo.save()
 }
 
-export const get = async (filter) => {
-    return Todo.findOne(filter)
+export const get = async (userId, filter) => {
+    return Todo.userHaveAccess(userId).findOne(filter)
 }
 
-export const list = async (filter) => {
-    return Todo.find(filter)
+export const list = async (userId, filter) => {
+    return Todo.userHaveAccess(userId).find(filter)
 }
 
-export const destroy = async (filter) => {
-    return Todo.findOneAndDelete(filter)
+export const destroy = async (userId, filter) => {
+    return Todo.userHaveAccess(userId).findOneAndDelete(filter)
 }
 
-export const update = async (filter, data) => {
-    return Todo.findOneAndUpdate(filter, data)
+export const update = async (userId, filter, data) => {
+    return Todo.userHaveAccess(userId).findOneAndUpdate(filter, data)
 }
 
 export const insertMany = async (data) => {
