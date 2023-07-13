@@ -25,8 +25,11 @@ describe('api/todo', () => {
             const params = {
                 title: faker.location.city(),
                 description: faker.location.city(),
-                username: faker.internet.userName(),
-                isDone: true
+                context: faker.location.city(),
+                isDone: true,
+                location: {
+                    coordinates: [-92.66159, 47.90767]
+                }
             }
 
             const response = await request(app)
@@ -521,5 +524,143 @@ describe('api/todo', () => {
 
             expect(response.status).toBe(403)
         })
+    })
+
+    describe('POST /search_by_text', () => {
+        it('return founded todos', async () => {
+            const newOwner = new UserFactory()
+            const todoOwner = await newOwner.save()
+
+            const searchQuery = 'test'
+
+            const newTodo1 = new TodoFactory({
+                title: 'test abc def',
+                sharedWith: [todoOwner.id]
+            })
+            await newTodo1.save()
+
+            const newTodo2 = new TodoFactory({
+                context: 'abc test def',
+                userId: todoOwner.id
+            })
+            await newTodo2.save()
+
+            const newTodo3 = new TodoFactory({ sharedWith: [todoOwner.id] })
+            await newTodo3.save()
+
+            const newTodo4 = new TodoFactory()
+            await newTodo4.save()
+
+            const response = await request(app)
+                .post(`/api/todo/search_by_text`)
+                .set(
+                    'Authorization',
+                    `Bearer ${generateAccessToken({ user: todoOwner })}`
+                )
+                .send({ search_by: searchQuery })
+
+            expect(response.status).toBe(200)
+            expect(response.body.result).toHaveLength(2)
+        })
+
+        it('return empty array if no todos were founded', async () => {
+            const newUser = new UserFactory()
+            const user = await newUser.save()
+
+            const searchQuery = 'test'
+
+            const response = await request(app)
+                .post(`/api/todo/search_by_text`)
+                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .send({ search_by: searchQuery })
+
+            expect(response.status).toBe(200)
+            expect(response.body.result).toHaveLength(0)
+        })
+
+        it('return if search string is empty', async () => {
+            const newOwner = new UserFactory()
+            const todoOwner = await newOwner.save()
+
+            const searchQuery = ' '
+
+            const newTodo1 = new TodoFactory({
+                title: 'test abc def',
+                sharedWith: [todoOwner.id]
+            })
+            await newTodo1.save()
+
+            const newTodo2 = new TodoFactory({
+                context: 'abc test def',
+                userId: todoOwner.id
+            })
+            await newTodo2.save()
+
+            const newTodo3 = new TodoFactory({ sharedWith: [todoOwner.id] })
+            await newTodo3.save()
+
+            const newTodo4 = new TodoFactory()
+            await newTodo4.save()
+
+            const response = await request(app)
+                .post(`/api/todo/search_by_text`)
+                .set(
+                    'Authorization',
+                    `Bearer ${generateAccessToken({ user: todoOwner })}`
+                )
+                .send({ search_by: searchQuery })
+
+            expect(response.status).toBe(200)
+            expect(response.body.result).toHaveLength(0)
+        })
+    })
+
+    describe('POST /search_in_radius', () => {
+        it('returns founded todos', async () => {
+            const newOwner = new UserFactory()
+            const todoOwner = await newOwner.save()
+
+            const newTodo1 = new TodoFactory({
+                sharedWith: [todoOwner.id],
+                isPrivate: false,
+                coordinates: [-92.661399, 47.907629]
+            })
+            await newTodo1.save()
+
+            const newTodo2 = new TodoFactory({
+                userId: todoOwner.id,
+                isPrivate: true,
+                coordinates: [-92.66159, 47.90767]
+            })
+            await newTodo2.save()
+
+            const newTodo3 = new TodoFactory({
+                sharedWith: [todoOwner.id],
+                isPrivate: true,
+                coordinates: [-101.412439, 45.983499]
+            })
+            await newTodo3.save()
+
+            const newTodo4 = new TodoFactory()
+            await newTodo4.save()
+
+            const body = {
+                radius: 10,
+                coordinates: [-92.661329, 47.907629]
+            }
+
+            const response = await request(app)
+                .post(`/api/todo/search_in_radius`)
+                .set(
+                    'Authorization',
+                    `Bearer ${generateAccessToken({ user: todoOwner })}`
+                )
+                .send(body)
+
+            expect(response.status).toBe(200)
+            expect(response.body.result).toHaveLength(2)
+        })
+
+        it('returns error if values are out of range', async () => {})
     })
 })

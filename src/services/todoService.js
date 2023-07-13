@@ -156,3 +156,32 @@ export const changeOwnership = async (userId, params, body) => {
 
     return result
 }
+
+export const searchByText = async (userId, params) => {
+    const searchBy = params.search_by
+
+    const todos = await todoRepository.list(userId, {
+        $text: { $search: searchBy }
+    })
+
+    return todos
+}
+
+export const searchInRadius = async (userId, params) => {
+    const METERS_PER_KILOMETER = 1000
+    const { radius, coordinates } = params
+
+    const todos = await todoRepository.list(userId, {
+        location: {
+            $nearSphere: {
+                $geometry: {
+                    type: 'Point',
+                    coordinates
+                },
+                $maxDistance: radius * METERS_PER_KILOMETER
+            }
+        }
+    })
+
+    return todos
+}

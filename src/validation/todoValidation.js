@@ -10,8 +10,17 @@ export const post = celebrate({
     body: Joi.object({
         title: Joi.string().required(),
         description: Joi.string().required(),
-        username: Joi.string().required(),
-        isDone: Joi.boolean().required()
+        context: Joi.string().optional(),
+        isPrivate: Joi.boolean().optional(),
+        isDone: Joi.boolean().required(),
+        location: {
+            coordinates: Joi.array()
+                .optional()
+                .ordered(
+                    Joi.number().required().min(-180).max(180),
+                    Joi.number().required().min(-90).max(90)
+                )
+        }
     })
 })
 
@@ -25,9 +34,18 @@ export const put = celebrate({
     body: Joi.object({
         id: Joi.string().required(),
         title: Joi.string().optional(),
+        context: Joi.string().optional(),
         description: Joi.string().optional(),
         isDone: Joi.boolean().optional(),
-        isPrivate: Joi.boolean().optional()
+        isPrivate: Joi.boolean().optional(),
+        location: {
+            coordinates: Joi.array()
+                .optional()
+                .ordered(
+                    Joi.number().required().min(-180).max(180),
+                    Joi.number().required().min(-90).max(90)
+                )
+        }
     })
 })
 
@@ -46,5 +64,23 @@ export const changeOwnership = celebrate({
     }),
     params: Joi.object({
         id: Joi.string().required()
+    })
+})
+
+export const searchByText = celebrate({
+    body: Joi.object({
+        search_by: Joi.string().required()
+    })
+})
+
+export const searchInRadius = celebrate({
+    body: Joi.object({
+        radius: Joi.number().required(),
+        coordinates: Joi.array()
+            .required()
+            .ordered(
+                Joi.number().required().min(-180).max(180),
+                Joi.number().required().min(-90).max(90)
+            )
     })
 })
