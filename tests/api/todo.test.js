@@ -2,19 +2,32 @@ import request from 'supertest'
 import { faker } from '@faker-js/faker'
 import app from '../../src/api/index'
 import Todo from '../../src/models/Todo'
-import { clearModelCollection } from '../helper/dbHelper'
+import User from '../../src/models/User'
+
+import {
+    clearModelCollectionMongo,
+    clearModelCollectionPsql,
+    closeConnections
+} from '../helper/dbHelper'
+
 import { generateAccessToken } from '../../src/shared/jwtHelper'
 
 const UserFactory = require('../factories/user')
 const TodoFactory = require('../factories/todo')
 
+afterAll(async () => {
+    await closeConnections()
+})
+
 describe('api/todo', () => {
     beforeEach(async () => {
-        await clearModelCollection(Todo)
+        await clearModelCollectionMongo(Todo)
+        await clearModelCollectionPsql(User)
     })
 
     afterAll(async () => {
-        await clearModelCollection(Todo)
+        await clearModelCollectionMongo(Todo)
+        await clearModelCollectionPsql(User)
     })
 
     describe('POST /', () => {
