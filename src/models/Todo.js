@@ -19,11 +19,11 @@ const todoSchema = mongoose.Schema({
         default: false
     },
     userId: {
-        type: String,
+        type: Number,
         required: true
     },
     sharedWith: {
-        type: Array,
+        type: [Number],
         required: false
     },
     isPrivate: {

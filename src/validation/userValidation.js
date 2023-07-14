@@ -4,7 +4,7 @@ const { celebrate, Joi } = require('celebrate')
 export const auth = celebrate({
     body: Joi.object({
         username: Joi.string().required().min(4),
-        password: Joi.string().required().min(4),
+        password: Joi.string().required().min(4)
     })
 })
 

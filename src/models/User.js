@@ -1,23 +1,22 @@
-const mongoose = require('mongoose')
+import sequelize from '../../config/postgres'
 
-const userSchema = mongoose.Schema({
+const { DataTypes } = require('sequelize')
+
+const User = sequelize.define('User', {
     username: {
-        type: String,
-        required: true,
-        unique: true,
-        minlength: 4
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
     },
     password: {
-        type: String,
-        required: true,
-        minlength: 4
+        type: DataTypes.STRING,
+        allowNull: false
     },
     email: {
-        type: String,
-        required: true
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
     }
 })
-
-const User = mongoose.model('User', userSchema)
 
 export default User
