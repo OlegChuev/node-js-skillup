@@ -11,5 +11,5 @@ export const get = async (params) => {
 }
 
 export const list = async () => {
-    return User.find()
+    return User.findAll()
 }

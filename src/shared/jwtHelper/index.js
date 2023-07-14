@@ -7,4 +7,3 @@ export const generateAccessToken = (user) => {
 export const verifyAccessToken = (token, callback) => {
     return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, callback)
 }
-

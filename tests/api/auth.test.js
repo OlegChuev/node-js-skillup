@@ -3,17 +3,22 @@ import request from 'supertest'
 import { faker } from '@faker-js/faker'
 import app from '../../src/api/index'
 import User from '../../src/models/User'
-import { clearModelCollection } from '../helper/dbHelper'
+
+import { clearModelCollectionPsql, closeConnections } from '../helper/dbHelper'
 
 const UserFactory = require('../factories/user')
 
+afterAll(async () => {
+    await closeConnections()
+})
+
 describe('POST auth/sign_in', () => {
     beforeEach(async () => {
-        await clearModelCollection(User)
+        await clearModelCollectionPsql(User)
     })
 
     afterAll(async () => {
-        await clearModelCollection(User)
+        await clearModelCollectionPsql(User)
     })
 
     describe('with valid sign in params', () => {
@@ -77,11 +82,11 @@ describe('POST auth/sign_in', () => {
 
 describe('POST auth/sign_up', () => {
     beforeEach(async () => {
-        await clearModelCollection(User)
+        await clearModelCollectionPsql(User)
     })
 
     afterAll(async () => {
-        await clearModelCollection(User)
+        await clearModelCollectionPsql(User)
     })
 
     describe('with valid params', () => {
@@ -98,7 +103,7 @@ describe('POST auth/sign_up', () => {
 
             expect(response.status).toBe(200)
             expect(response.body).toEqual({ success: 'Account created' })
-            expect(await User.find()).toHaveLength(1)
+            expect(await User.findAll({ where: {} })).toHaveLength(1)
         })
     })
 
