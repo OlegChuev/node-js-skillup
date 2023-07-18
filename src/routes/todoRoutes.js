@@ -22,5 +22,17 @@ router
         todoValidator.changeOwnership,
         todoController.changeOwnership
     )
+    .post(
+        '/search_by_text',
+        verifyJWT,
+        todoValidator.searchByText,
+        todoController.searchByText
+    )
+    .post(
+        '/search_in_radius',
+        verifyJWT,
+        todoValidator.searchInRadius,
+        todoController.searchInRadius
+    )
 
 module.exports = router
