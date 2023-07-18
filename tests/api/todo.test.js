@@ -671,7 +671,5 @@ describe('api/todo', () => {
             expect(response.status).toBe(200)
             expect(response.body.result).toHaveLength(2)
         })
-
-        it('returns error if values are out of range', async () => {})
     })
 })
