@@ -212,7 +212,11 @@ describe('api/todo', () => {
             const newUser = new UserFactory()
             const user = await newUser.save()
 
-            const newTodo = new TodoFactory({ userId: user.id })
+            const newTodo = new TodoFactory({
+                userId: user.id,
+                isPrivate: false,
+                isDone: true
+            })
             const todo = await newTodo.save()
 
             const newDescription = faker.internet.userName()
@@ -222,7 +226,14 @@ describe('api/todo', () => {
                 .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
                 .send({
                     id: todo.id,
-                    description: newDescription
+                    description: newDescription,
+                    context: newDescription,
+                    title: newDescription,
+                    location: {
+                        coordinates: [1, 1]
+                    },
+                    isDone: false,
+                    isPrivate: true
                 })
 
             expect(response.status).toBe(200)

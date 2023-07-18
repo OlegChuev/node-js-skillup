@@ -4,6 +4,8 @@ import ForbiddenError from '../errors/forbiddenError'
 const todoRepository = require('../repository/todoRepository')
 const userRepository = require('../repository/userRepository')
 
+const { locationFormat } = require('../shared/todoHelper')
+
 export const listTodos = async (userId) => {
     const todos = await todoRepository.list(userId)
 
@@ -24,7 +26,11 @@ export const getTodo = async (userId, params) => {
 }
 
 export const createTodo = async (userId, params) => {
-    const todo = await todoRepository.create({ ...params, userId })
+    const location = params?.location?.coordinates
+        ? locationFormat(params.location.coordinates)
+        : {}
+
+    const todo = await todoRepository.create({ ...params, userId, location })
 
     return todo
 }
@@ -32,7 +38,15 @@ export const createTodo = async (userId, params) => {
 export const updateTodo = async (userId, params) => {
     const { id } = params
 
-    const todo = await todoRepository.update(userId, { _id: id }, params)
+    const location = params?.location?.coordinates
+        ? locationFormat(params.location.coordinates)
+        : {}
+
+    const todo = await todoRepository.update(
+        userId,
+        { _id: id },
+        { ...params, location }
+    )
 
     if (!todo)
         throw new NotFoundError(
@@ -51,6 +65,7 @@ export const createRandom = async (userId) => {
     const params = {
         description: data.activity,
         title: data.activity,
+        context: data.activity,
         userId,
         isDone: false
     }
@@ -77,6 +92,7 @@ export const seedTodos = async (userId) => {
         {
             title: 'firstTodo',
             description: 'some text',
+            context: 'random',
             isDone: 'false',
             isPrivate: true,
             userId
@@ -173,13 +189,12 @@ export const searchInRadius = async (userId, params) => {
     const METERS_PER_KILOMETER = 1000
     const { radius, coordinates } = params
 
+    const searchInRadiusParams = locationFormat(coordinates)
+
     const todos = await todoRepository.list(userId, {
         location: {
             $nearSphere: {
-                $geometry: {
-                    type: 'Point',
-                    coordinates
-                },
+                $geometry: searchInRadiusParams,
                 $maxDistance: radius * METERS_PER_KILOMETER
             }
         }
