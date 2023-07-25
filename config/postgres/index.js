@@ -12,7 +12,7 @@ const PSQL_URL = `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HO
 
 const psqlClient = new Sequelize(PSQL_URL, {
     dialect: 'postgres',
-    logging: NODE_ENV !== 'test'
+    logging: false
 })
 
 psqlClient.connectToDb = async () => {
