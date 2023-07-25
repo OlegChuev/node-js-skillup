@@ -19,7 +19,9 @@ export const destroy = async (userId, filter) => {
 }
 
 export const update = async (userId, filter, data) => {
-    return Todo.userHaveAccess(userId).findOneAndUpdate(filter, data)
+    return Todo.userHaveAccess(userId).findOneAndUpdate(filter, data, {
+        returnOriginal: false
+    })
 }
 
 export const insertMany = async (data) => {

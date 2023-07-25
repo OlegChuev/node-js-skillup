@@ -23,7 +23,11 @@ These instructions will help you set up the development environment for the proj
 
 `cp .env.example .env`
 
-4. Build and start the Docker containers:
+4. Create config.json from config.json.example and edit required variables.
+
+`cp config/config.json.example config/config.json`
+
+5. Build and start the Docker containers:
 
 `docker compose up -d`
 
