@@ -7,10 +7,15 @@ WORKDIR /app
 # Install app dependencies
 COPY package*.json ./
 
+# Generated prisma files
+COPY prisma ./prisma/
+
 RUN npm install -g nodemon
 RUN npm install
+
+RUN npx prisma generate
 
 # Bundle app source
 COPY . .
 
-CMD ["npm", "run", "dev"]
+CMD ["bash"]
