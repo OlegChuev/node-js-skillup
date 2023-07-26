@@ -1,0 +1,37 @@
+version: 2.1
+jobs:
+  build:
+    working_directory: ~/app
+    docker:
+      - image: circleci/node:20
+
+    steps:
+      - checkout
+
+      # Install Node.js dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+
+      - run:
+          name: Install Dependencies
+          command: npm install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      # Set up MongoDB and PostgreSQL services using Docker Compose
+      - run:
+          name: Set Up Databases
+          command: |
+            docker-compose -f ./docker-compose.yml up -d mongodb postgres
+            # Wait for databases to start
+            sleep 15
+
+      # Run Node.js tests
+      - run:
+          name: Run Tests
+          command: npm test
