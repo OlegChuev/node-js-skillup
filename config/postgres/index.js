@@ -1,22 +1,7 @@
-const { Sequelize } = require('sequelize')
+// eslint-disable-next-line import/no-extraneous-dependencies
+const { PrismaClient } = require('@prisma/client')
 
-const {
-    POSTGRES_USER,
-    POSTGRES_PASSWORD,
-    POSTGRES_HOST,
-    POSTGRES_PORT,
-    NODE_ENV
-} = process.env
-
-const PSQL_URL = `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${NODE_ENV}`
-
-const psqlClient = new Sequelize(PSQL_URL, {
-    dialect: 'postgres',
-    logging: false
+// eslint-disable-next-line import/prefer-default-export
+export const prisma = new PrismaClient({
+    log: ['info', 'warn', 'error']
 })
-
-psqlClient.connectToDb = async () => {
-    await psqlClient.sync()
-}
-
-export default psqlClient

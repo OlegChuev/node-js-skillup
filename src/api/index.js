@@ -1,5 +1,4 @@
 import app from './app'
-import postgresClient from '../../config/postgres'
 import mongoClient from '../../config/mongo'
 
 import logger from '../../config/winston'
@@ -13,10 +12,6 @@ async function startServer(server) {
         // Connect to MongoDB
         await mongoClient.connectToDb()
         logger.info('Connected to MongoDB')
-
-        // Connect to PostgreSQL
-        await postgresClient.connectToDb()
-        logger.info('Connected to PostgresDB')
 
         // Start server
         if (ENV !== 'test') {

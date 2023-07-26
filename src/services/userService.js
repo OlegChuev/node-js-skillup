@@ -29,7 +29,7 @@ export const signUpUser = async (params) => {
 export const signInUser = async (params) => {
     const { username, password } = params
 
-    const user = await userRepository.get({ where: { username } })
+    const user = await userRepository.get({ username })
 
     if (!user) throw new NotAuthorizedError('Username or password is incorrect')
 
