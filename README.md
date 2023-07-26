@@ -29,6 +29,17 @@ These instructions will help you set up the development environment for the proj
 
 The application should now be running at `http://localhost:3000`.
 
+
+## Development
+
+* After making changes to the database schema or adding new migrations, execute
+
+  `npx prisma migrate dev`
+
+  to apply pending migrations, generate a new migration for any changes you made, etc.
+
+  For more details, check the official [docs](https://www.prisma.io/docs/concepts/components/prisma-migrate/migrate-development-production).
+
 ## Testing
 
 1. Create .env.test from .env.example and edit required variables.
