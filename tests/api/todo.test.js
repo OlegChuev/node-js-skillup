@@ -64,6 +64,9 @@ describe('api/todo', () => {
             const newUser = new UserFactory()
             const user = await newUser.save()
 
+            const newUser2 = new UserFactory()
+            const user2 = await newUser2.save()
+
             const userPrivateTodo = new TodoFactory({
                 userId: user.id,
                 isPrivate: true
@@ -71,7 +74,7 @@ describe('api/todo', () => {
             const todo1 = await userPrivateTodo.save()
 
             const sharedWithUserTodo = new TodoFactory({
-                sharedWith: [user.id]
+                sharedWith: [user.id, user2.id]
             })
             await sharedWithUserTodo.save()
 
@@ -176,7 +179,7 @@ describe('api/todo', () => {
             expect(await Todo.find()).toHaveLength(0)
         })
 
-        it('destroy shared todo by id', async () => {
+        it("return error and doesn't destroy shared todo by id", async () => {
             const newUser = new UserFactory()
             const user = await newUser.save()
 
@@ -187,8 +190,8 @@ describe('api/todo', () => {
                 .delete(`/api/todo/${todo.id}`)
                 .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
 
-            expect(response.status).toBe(200)
-            expect(await Todo.find()).toHaveLength(0)
+            expect(response.status).toBe(404)
+            expect(await Todo.find()).toHaveLength(1)
         })
 
         it("return error and doesn't destroy todo since user doesn't have access", async () => {
@@ -208,7 +211,7 @@ describe('api/todo', () => {
     })
 
     describe('PUT /', () => {
-        it('update todo by id', async () => {
+        it('update todo by id by owner', async () => {
             const newUser = new UserFactory()
             const user = await newUser.save()
 
@@ -284,6 +287,25 @@ describe('api/todo', () => {
                 })
 
             expect(response.status).toBe(404)
+        })
+
+        it('return error if shared user tries to update fields which can be updated only by owner', async () => {
+            const newUser = new UserFactory()
+            const user = await newUser.save()
+
+            const newTodo = new TodoFactory({ sharedWith: [user.id] })
+            const todo = await newTodo.save()
+
+            const response = await request(app)
+                .put(`/api/todo/`)
+                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .send({
+                    id: todo.id,
+                    isPrivate: true,
+                    description: faker.internet.userName()
+                })
+
+            expect(response.status).toBe(403)
         })
     })
 
@@ -525,7 +547,7 @@ describe('api/todo', () => {
             expect(response.status).toBe(403)
         })
 
-        it('return erorr if user is trying to share todo that is shared with him', async () => {
+        it('return error if user is trying to share todo that is shared with him', async () => {
             const newOwner = new UserFactory()
             const owner = await newOwner.save()
 
