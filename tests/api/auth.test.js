@@ -103,7 +103,7 @@ describe('POST auth/sign_up', () => {
 
             expect(response.status).toBe(200)
             expect(response.body).toEqual({ success: 'Account created' })
-            expect(await User.findAll({ where: {} })).toHaveLength(1)
+            expect(await User.findMany({})).toHaveLength(1)
         })
     })
 
