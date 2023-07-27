@@ -8,6 +8,6 @@ export const get = async (params) => {
     return User.findFirst({ where: params })
 }
 
-export const list = async () => {
-    return User.findMany()
+export const list = async (params) => {
+    return User.findMany(params)
 }
