@@ -23,18 +23,29 @@ These instructions will help you set up the development environment for the proj
 
 `cp .env.example .env`
 
-4. Create config.json from config.json.example and edit required variables.
-
-`cp config/config.json.example config/config.json`
-
-5. Build and start the Docker containers:
+4. Build and start the Docker containers:
 
 `docker compose up -d`
 
 The application should now be running at `http://localhost:3000`.
 
+
+## Development
+
+* After making changes to the database schema or adding new migrations, execute
+
+  `npx prisma migrate dev`
+
+  to apply pending migrations, generate a new migration for any changes you made, etc.
+
+  For more details, check the official [docs](https://www.prisma.io/docs/concepts/components/prisma-migrate/migrate-development-production).
+
 ## Testing
 
-To run tests use the following command:
+1. Create .env.test from .env.example and edit required variables.
+
+2. Create required database in psql.
+
+3. To run tests use the following command:
 
 `docker compose run --rm web npm test`

@@ -24,15 +24,15 @@ class UserFactory {
     }
 
     async save() {
-        const newUser = new User({
-            username: this.username,
-            email: this.email,
-            password: await this.getPasswordHash()
+        const user = User.create({
+            data: {
+                username: this.username,
+                email: this.email,
+                password: await this.getPasswordHash()
+            }
         })
 
-        const savedUser = await newUser.save()
-
-        return savedUser
+        return user
     }
 }
 

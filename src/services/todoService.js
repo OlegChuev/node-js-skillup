@@ -107,7 +107,7 @@ export const giveAccessToUser = async (userId, params, body) => {
     const { id } = params
     const { email } = body
 
-    const user = await userRepository.get({ where: { email } })
+    const user = await userRepository.get({ email })
 
     if (!user) throw new NotFoundError(`User by email ${email} doesn't exist.`)
 
@@ -142,7 +142,7 @@ export const changeOwnership = async (userId, params, body) => {
     const { id } = params
     const { email } = body
 
-    const user = await userRepository.get({ where: { email } })
+    const user = await userRepository.get({ email })
 
     if (!user) throw new NotFoundError(`User by email ${email} doesn't exist.`)
 
