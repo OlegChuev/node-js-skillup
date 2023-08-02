@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { StatusCodes } from 'http-status-codes'
 import mongoose from 'mongoose'
+import { ForbiddenError } from '@casl/ability'
 import ApiError from '../errors/apiError'
 
 const { isCelebrateError } = require('celebrate')
@@ -18,6 +19,8 @@ export const errorConverter = (err, _req, _res, next) => {
     if (!(error instanceof ApiError)) {
         if (error instanceof mongoose.Error)
             statusCode = StatusCodes.BAD_REQUEST
+        else if (error instanceof ForbiddenError)
+            statusCode = StatusCodes.FORBIDDEN
         else if (isCelebrateError(error))
             statusCode = StatusCodes.UNPROCESSABLE_ENTITY
         else statusCode = StatusCodes.INTERNAL_SERVER_ERROR

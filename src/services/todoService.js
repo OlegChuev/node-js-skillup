@@ -1,62 +1,71 @@
 import NotFoundError from '../errors/notFoundError'
-import ForbiddenError from '../errors/forbiddenError'
+import DefaultForbiddenError from '../errors/forbiddenError'
 
 const todoRepository = require('../repository/todoRepository')
 const userRepository = require('../repository/userRepository')
 
 const { locationFormat } = require('../shared/todoHelper')
 
-export const listTodos = async (userId) => {
-    const todos = await todoRepository.list(userId)
+const { accessibleBy } = require('@casl/mongoose')
+const { ForbiddenError } = require('@casl/ability')
+
+export const listTodos = async (_user, ability) => {
+    const todos = await todoRepository.list(accessibleBy(ability).Todo)
 
     return todos
 }
 
-export const getTodo = async (userId, params) => {
+export const getTodo = async (_user, ability, params) => {
     const { id } = params
 
-    const todo = await todoRepository.get(userId, { _id: id })
+    const todo = await todoRepository.get({
+        $and: [
+            accessibleBy(ability).Todo,
+            { _id: id }
+        ]
+    })
 
-    if (!todo)
-        throw new NotFoundError(
-            "Todo doesn't exist or you don't have access to it."
-        )
+    if (!todo) throw new NotFoundError("Todo doesn't exist or you don't have access to it.")
 
     return todo
 }
 
-export const createTodo = async (userId, params) => {
+export const createTodo = async (user, params) => {
     const location = params?.location?.coordinates
         ? locationFormat(params.location.coordinates)
         : {}
 
-    const todo = await todoRepository.create({ ...params, userId, location })
+    const todo = await todoRepository.create({ ...params, userId: user.id , location })
 
     return todo
 }
 
-export const updateTodo = async (userId, params) => {
+export const updateTodo = async (_user, ability, params) => {
     const { id } = params
 
     const location = params?.location?.coordinates
         ? locationFormat(params.location.coordinates)
         : {}
 
-    const todo = await todoRepository.update(
-        userId,
-        { _id: id },
-        { ...params, location }
-    )
+    const todo = await todoRepository.get({
+        $and: [
+            accessibleBy(ability).Todo,
+            { _id: id }
+        ]
+    })
 
-    if (!todo)
-        throw new NotFoundError(
-            "Todo doesn't exist or you don't have access to it."
-        )
+    if (!todo) throw new NotFoundError("Todo doesn't exist or you don't have access to it.")
+
+    todo.set({ ...params, location })
+
+    ForbiddenError.from(ability).throwUnlessCan('update', todo)
+
+    await todoRepository.save(todo)
 
     return todo
 }
 
-export const createRandom = async (userId) => {
+export const createRandom = async (user) => {
     const url = 'https://www.boredapi.com/api/activity'
 
     const response = await fetch(url)
@@ -66,7 +75,7 @@ export const createRandom = async (userId) => {
         description: data.activity,
         title: data.activity,
         context: data.activity,
-        userId,
+        userId: user.id,
         isDone: false
     }
 
@@ -75,19 +84,21 @@ export const createRandom = async (userId) => {
     return todo
 }
 
-export const destroyTodo = async (userId, params) => {
+export const destroyTodo = async (_user, ability, params) => {
     const { id } = params
-    const todo = await todoRepository.destroy(userId, { _id: id })
+    const todo = await todoRepository.destroy({
+        $and: [
+            accessibleBy(ability, 'delete').Todo,
+            { _id: id }
+        ]
+    })
 
-    if (!todo)
-        throw new NotFoundError(
-            "Todo doesn't exist or you don't have access to it."
-        )
+    if (!todo) throw new NotFoundError("Todo doesn't exist or you don't have access to it.")
 
     return todo
 }
 
-export const seedTodos = async (userId) => {
+export const seedTodos = async (user) => {
     const data = [
         {
             title: 'firstTodo',
@@ -95,109 +106,103 @@ export const seedTodos = async (userId) => {
             context: 'random',
             isDone: 'false',
             isPrivate: true,
-            userId
+            userId: user.id
         }
     ]
+
     const todos = await todoRepository.insertMany(data)
 
     return todos
 }
 
-export const giveAccessToUser = async (userId, params, body) => {
+export const giveAccessToUser = async (user, ability, params, body) => {
     const { id } = params
     const { email } = body
 
-    const user = await userRepository.get({ email })
+    const userToShare = await userRepository.get({ email })
 
-    if (!user) throw new NotFoundError(`User by email ${email} doesn't exist.`)
+    if (!userToShare) throw new NotFoundError(`User by email ${email} doesn't exist.`)
 
-    if (user.id === userId)
-        throw new ForbiddenError('You cannot share todo with your account.')
+    if (userToShare.id === user.id) throw new DefaultForbiddenError('You cannot share todo with your account.')
 
-    const todo = await todoRepository.get(userId, { _id: id })
+    const todo = await todoRepository.get({
+        $and: [
+            accessibleBy(ability).Todo,
+            { _id: id }
+        ]
+    })
 
-    if (!todo)
-        throw new NotFoundError(
-            "Todo doesn't exist or you don't have access to it."
-        )
+    if (!todo) throw new NotFoundError("Todo doesn't exist or you don't have access to it.")
 
-    if (todo.isPrivate)
-        throw new ForbiddenError(
-            'You cannot share private todo. Set isPrivate to false firstly.'
-        )
+    todo.sharedWith.addToSet(userToShare.id)
 
-    if (todo.userId !== userId)
-        throw new ForbiddenError('You can only share your own todo.')
+    ForbiddenError.from(ability).throwUnlessCan('share', todo)
 
-    const result = await todoRepository.update(
-        userId,
-        { _id: id },
-        { $addToSet: { sharedWith: user.id } }
-    )
+    const result = await todoRepository.save(todo)
 
     return result
 }
 
-export const changeOwnership = async (userId, params, body) => {
+export const changeOwnership = async (user, ability, params, body) => {
     const { id } = params
     const { email } = body
 
-    const user = await userRepository.get({ email })
+    const userToChange = await userRepository.get({ email })
 
-    if (!user) throw new NotFoundError(`User by email ${email} doesn't exist.`)
+    if (!userToChange) throw new NotFoundError(`User by email ${email} doesn't exist.`)
 
-    if (user.id === userId)
-        throw new ForbiddenError('You cannot change ownership to your account.')
+    if (userToChange.id === user.id) throw new DefaultForbiddenError('You cannot change ownership to your account.')
 
-    const todo = await todoRepository.get(userId, { _id: id })
+    const todo = await todoRepository.get({
+        $and: [
+            accessibleBy(ability).Todo,
+            { _id: id }
+        ]
+    })
 
-    if (!todo)
-        throw new NotFoundError(
-            "Todo doesn't exist or you don't have access to it."
-        )
+    if (!todo) throw new NotFoundError("Todo doesn't exist or you don't have access to it.")
 
-    if (todo.isPrivate)
-        throw new ForbiddenError(
-            'You cannot change ownership of private todo. Set isPrivate to false firstly.'
-        )
+    ForbiddenError.from(ability).throwUnlessCan('changeOwnership', todo)
 
-    if (todo.userId !== userId)
-        throw new ForbiddenError(
-            'You can change the ownership of only your own todo.'
-        )
+    todo.set({ userId: userToChange.id })
 
-    const result = await todoRepository.update(
-        userId,
-        { _id: id },
-        { userId: user.id }
-    )
+    const result = await todoRepository.save(todo)
 
     return result
 }
 
-export const searchByText = async (userId, params) => {
+export const searchByText = async (_user, ability, params) => {
     const searchBy = params.search_by
 
-    const todos = await todoRepository.list(userId, {
-        $text: { $search: searchBy }
+    const todos = await todoRepository.list({
+        $and: [
+            accessibleBy(ability).Todo,
+            { $text: { $search: searchBy } }
+        ]
     })
 
     return todos
 }
 
-export const searchInRadius = async (userId, params) => {
+export const searchInRadius = async (_user, ability, params) => {
     const METERS_PER_KILOMETER = 1000
     const { radius, coordinates } = params
 
     const searchInRadiusParams = locationFormat(coordinates)
-
-    const todos = await todoRepository.list(userId, {
+    const searchCondition = {
         location: {
             $nearSphere: {
                 $geometry: searchInRadiusParams,
                 $maxDistance: radius * METERS_PER_KILOMETER
             }
         }
+    }
+
+    const todos = await todoRepository.list({
+        $and: [
+            accessibleBy(ability).Todo,
+            searchCondition
+        ]
     })
 
     return todos

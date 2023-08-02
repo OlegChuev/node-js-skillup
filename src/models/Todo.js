@@ -49,25 +49,6 @@ const todoSchema = mongoose.Schema({
     }
 })
 
-todoSchema.statics.userHaveAccess = function (userId) {
-    // User can have access only to public todos of other users
-
-    return this.where({
-        $or: [
-            // Private and belongs to user
-            { $and: [{ userId }, { isPrivate: true }] },
-
-            // Public and is belongs to user or is shared
-            {
-                $and: [
-                    { isPrivate: false },
-                    { $or: [{ userId }, { sharedWith: userId }] }
-                ]
-            }
-        ]
-    })
-}
-
 todoSchema.index({ title: 'text', context: 'text' })
 todoSchema.index({ location: '2dsphere' })
 
