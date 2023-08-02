@@ -1,11 +1,6 @@
 const winston = require('winston')
 
-const level = () => {
-    const env = process.env.NODE_ENV || 'development'
-    const isDevelopment = env === 'development'
-
-    return isDevelopment ? 'debug' : 'info'
-}
+const { LOG_LEVEL, NODE_ENV } = process.env
 
 const colors = {
     error: 'red',
@@ -34,12 +29,12 @@ const transports = [
 ]
 
 const logger = winston.createLogger({
-    level: level(),
+    level: LOG_LEVEL || 'debug',
     format,
     transports
 })
 
-if (process.env.NODE_ENV !== 'test') {
+if (NODE_ENV !== 'test') {
     logger.add(
         new winston.transports.Console({
             format: winston.format.simple()
