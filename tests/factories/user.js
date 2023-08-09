@@ -5,10 +5,11 @@ import User from '../../src/models/User'
 const bcrypt = require('bcryptjs')
 
 class UserFactory {
-    constructor({ username, password, email } = {}) {
+    constructor({ username, password, email, is_blocked } = {}) {
         this.username = username || faker.internet.userName()
         this.password = password || faker.internet.password()
         this.email = email || faker.internet.email()
+        this.is_blocked = is_blocked || false
     }
 
     getPassword() {
@@ -28,7 +29,8 @@ class UserFactory {
             data: {
                 username: this.username,
                 email: this.email,
-                password: await this.getPasswordHash()
+                password: await this.getPasswordHash(),
+                is_blocked: this.is_blocked
             }
         })
 

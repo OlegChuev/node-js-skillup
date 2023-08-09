@@ -20,7 +20,7 @@ describe('/api/user', () => {
 
             const response = await request(app)
                 .get('/api/users')
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
 
             expect(response.status).toBe(200)
             expect(response.body).toHaveLength(1)

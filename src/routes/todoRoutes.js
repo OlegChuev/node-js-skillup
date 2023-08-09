@@ -7,12 +7,23 @@ const router = express.Router()
 
 const verifyJWT = require('../middleware/verifyJWT')
 const verifyAbility = require('../middleware/auth')
+const verifySubscription = require('../middleware/verifySubscription')
+const verifyAccess = require('../middleware/verifyAccess')
 
 router
-    .get('/', verifyJWT, verifyAbility, todoController.list)
+    .get(
+        '/',
+        verifyJWT,
+        verifyAccess,
+        verifySubscription,
+        verifyAbility,
+        todoController.list
+    )
     .get(
         '/:id',
         verifyJWT,
+        verifyAccess,
+        verifySubscription,
         verifyAbility,
         todoValidator.get,
         todoController.get
@@ -20,6 +31,8 @@ router
     .post(
         '/',
         verifyJWT,
+        verifyAccess,
+        verifySubscription,
         verifyAbility,
         todoValidator.post,
         todoController.post
@@ -27,6 +40,8 @@ router
     .delete(
         '/:id',
         verifyJWT,
+        verifyAccess,
+        verifySubscription,
         verifyAbility,
         todoValidator.destroy,
         todoController.destroy
@@ -34,20 +49,33 @@ router
     .put(
         '/',
         verifyJWT,
+        verifyAccess,
+        verifySubscription,
         verifyAbility,
         todoValidator.put,
         todoController.update
     )
-    .get('/random/seed', verifyJWT, verifyAbility, todoController.seed)
+    .get(
+        '/random/seed',
+        verifyJWT,
+        verifyAccess,
+        verifySubscription,
+        verifyAbility,
+        todoController.seed
+    )
     .get(
         '/random/activity',
         verifyJWT,
+        verifyAccess,
+        verifySubscription,
         verifyAbility,
         todoController.createRandom
     )
     .post(
         '/:id/share',
         verifyJWT,
+        verifyAccess,
+        verifySubscription,
         verifyAbility,
         todoValidator.share,
         todoController.share
@@ -55,6 +83,8 @@ router
     .post(
         '/:id/change_ownership',
         verifyJWT,
+        verifyAccess,
+        verifySubscription,
         verifyAbility,
         todoValidator.changeOwnership,
         todoController.changeOwnership
@@ -62,6 +92,8 @@ router
     .post(
         '/search_by_text',
         verifyJWT,
+        verifyAccess,
+        verifySubscription,
         verifyAbility,
         todoValidator.searchByText,
         todoController.searchByText
@@ -69,6 +101,8 @@ router
     .post(
         '/search_in_radius',
         verifyJWT,
+        verifyAccess,
+        verifySubscription,
         verifyAbility,
         todoValidator.searchInRadius,
         todoController.searchInRadius

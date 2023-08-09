@@ -3,6 +3,8 @@ const jwtHelper = require('../shared/jwtHelper/index')
 import NotAuthorizedError from '../errors/notAuthorizedError'
 import ForbiddenError from '../errors/forbiddenError'
 
+const userRepository = require('../repository/userRepository')
+
 const verifyJWT = (req, res, next) => {
     const authHeader = req.headers.authorization || req.headers.Authorization
 
@@ -11,11 +13,12 @@ const verifyJWT = (req, res, next) => {
 
     const token = authHeader.split(' ')[1]
 
-    jwtHelper.verifyAccessToken(token, (err, decoded) => {
+    jwtHelper.verifyAccessToken(token, async (err, decoded) => {
         if (err)
             throw new ForbiddenError('Invalid or expired JWT token.')
 
-        req.user = decoded.user
+        req.user = await userRepository.get({ id: decoded.id })
+
         next()
   })
 }

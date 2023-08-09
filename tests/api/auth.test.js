@@ -78,6 +78,29 @@ describe('POST auth/sign_in', () => {
             expect(response.body.message).toEqual('Unauthorized')
         })
     })
+
+    describe('when user is blocked', () => {
+        const params = {
+            username: faker.internet.userName(),
+            password: faker.internet.password()
+        }
+
+        it('returns error', async () => {
+            const newUser = new UserFactory({
+                username: params.username,
+                password: params.password,
+                is_blocked: true
+            })
+
+            await newUser.save()
+
+            const response = await request(app)
+                .post('/auth/sign_in')
+                .send(params)
+
+            expect(response.status).toBe(403)
+        })
+    })
 })
 
 describe('POST auth/sign_up', () => {

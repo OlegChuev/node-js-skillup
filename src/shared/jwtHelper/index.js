@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken')
 
 export const generateAccessToken = (user) => {
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '8h' })
+    return jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: '8h'
+    })
 }
 
 export const verifyAccessToken = (token, callback) => {

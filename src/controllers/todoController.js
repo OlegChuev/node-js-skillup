@@ -4,7 +4,7 @@ export const list = async (req, res, next) => {
     try {
         const result = await todoService.listTodos(req.user, req.ability)
 
-        res.status(200).json(result)
+        res.status(200).json({ result })
     } catch (error) {
         next(error)
     }
