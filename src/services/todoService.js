@@ -1,5 +1,6 @@
 import NotFoundError from '../errors/notFoundError'
 import DefaultForbiddenError from '../errors/forbiddenError'
+import wss from '../api/ws'
 
 const todoRepository = require('../repository/todoRepository')
 const userRepository = require('../repository/userRepository')
@@ -40,7 +41,7 @@ export const createTodo = async (user, params) => {
     return todo
 }
 
-export const updateTodo = async (_user, ability, params) => {
+export const updateTodo = async (user, ability, params) => {
     const { id } = params
 
     const location = params?.location?.coordinates
@@ -62,6 +63,10 @@ export const updateTodo = async (_user, ability, params) => {
 
     await todoRepository.save(todo)
 
+    todo.sharedWith.forEach((userId) => {
+        wss.broadcastToUser(userId, JSON.stringify({ event: 'todoUpdated', todo }))
+    })
+
     return todo
 }
 
@@ -81,10 +86,12 @@ export const createRandom = async (user) => {
 
     const todo = await todoRepository.create(params)
 
+    wss.broadcastToUser(user.id, JSON.stringify({ event: 'todoCreated', todo }))
+
     return todo
 }
 
-export const destroyTodo = async (_user, ability, params) => {
+export const destroyTodo = async (user, ability, params) => {
     const { id } = params
     const todo = await todoRepository.destroy({
         $and: [
@@ -94,6 +101,10 @@ export const destroyTodo = async (_user, ability, params) => {
     })
 
     if (!todo) throw new NotFoundError("Todo doesn't exist or you don't have access to it.")
+
+    todo.sharedWith.forEach((userId) => {
+        wss.broadcastToUser(userId, JSON.stringify({ event: 'todoDestroyed', todo }))
+    })
 
     return todo
 }
@@ -140,6 +151,10 @@ export const giveAccessToUser = async (user, ability, params, body) => {
 
     const result = await todoRepository.save(todo)
 
+    todo.sharedWith.forEach((userId) => {
+        wss.broadcastToUser(userId, JSON.stringify({ event: 'todoShared', todo }))
+    })
+
     return result
 }
 
@@ -167,6 +182,10 @@ export const changeOwnership = async (user, ability, params, body) => {
     todo.set({ userId: userToChange.id })
 
     const result = await todoRepository.save(todo)
+
+    todo.sharedWith.forEach((userId) => {
+        wss.broadcastToUser(userId, JSON.stringify({ event: 'todoChangedOwnership', todo }))
+    })
 
     return result
 }

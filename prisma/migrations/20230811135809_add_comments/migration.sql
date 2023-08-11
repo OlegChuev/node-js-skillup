@@ -1,0 +1,11 @@
+-- CreateTable
+CREATE TABLE "Comments" (
+    "id" SERIAL NOT NULL,
+    "user_id" INTEGER NOT NULL,
+    "todo_id" VARCHAR(255) NOT NULL,
+    "text" VARCHAR(255) NOT NULL,
+    "createdAt" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Comments_pkey" PRIMARY KEY ("id")
+);

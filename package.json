@@ -37,7 +37,8 @@
     "stripe": "^12.16.0",
     "supertest": "^6.3.3",
     "uuid": "^9.0.0",
-    "winston": "^3.10.0"
+    "winston": "^3.10.0",
+    "ws": "^8.13.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.21.5",

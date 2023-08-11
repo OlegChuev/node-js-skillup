@@ -20,7 +20,7 @@ const verifyJWT = (req, res, next) => {
         req.user = await userRepository.get({ id: decoded.id })
 
         next()
-  })
+    })
 }
 
 module.exports = verifyJWT
