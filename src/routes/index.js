@@ -5,6 +5,7 @@ const app = express()
 app.use('/api/todo(s)?', require('./todoRoutes'))
 app.use('/api/user(s)?', require('./userRoutes'))
 app.use('/auth', require('./authRoutes'))
+app.use('/api/payment', require('./paymentRoutes'))
 
 // static files
 app.use('/assets', express.static('../public/'))

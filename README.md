@@ -49,3 +49,10 @@ The application should now be running at `http://localhost:3000`.
 3. To run tests use the following command:
 
 `docker compose run --rm web npm test`
+
+## Stripe
+
+To trigger webhooks in the local environment, please use the dedicated container `stripe-cli`.
+Note that it requires STRIPE_WEBHOOK_KEY for correct work. The results of webhook events are displayed here on the [dashboard](https://dashboard.stripe.com/test/customers).
+
+`docker compose run --rm stripe-cli trigger invoice.payment_failed`

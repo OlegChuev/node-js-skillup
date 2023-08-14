@@ -8,10 +8,14 @@ datasource db {
 }
 
 model Users {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique @db.VarChar(255)
-  password  String   @db.VarChar(255)
-  email     String   @unique @db.VarChar(255)
-  createdAt DateTime @db.Timestamptz(6) @default(now())
-  updatedAt DateTime @db.Timestamptz(6) @default(now())
+  id                            Int      @id @default(autoincrement())
+  username                      String   @unique @db.VarChar(255)
+  password                      String   @db.VarChar(255)
+  email                         String   @unique @db.VarChar(255)
+  stripe_customer_id            String?  @unique
+  stripe_subscription_id        String?  @unique
+  stripe_subscription_is_active Boolean  @default(false)
+  is_blocked                    Boolean? @default(false)
+  createdAt                     DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt                     DateTime @default(now()) @db.Timestamptz(6)
 }

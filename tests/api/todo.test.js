@@ -47,7 +47,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .post('/api/todo')
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
                 .send(params)
 
             expect(response.status).toBe(200)
@@ -89,11 +89,11 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .get('/api/todos')
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
 
             expect(response.status).toBe(200)
-            expect(response.body).toHaveLength(2)
-            expect(response.body[0].description).toBe(todo1.description)
+            expect(response.body.result).toHaveLength(2)
+            expect(response.body.result[0].description).toBe(todo1.description)
         })
     })
 
@@ -110,7 +110,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .get(`/api/todo/${todo.id}`)
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
 
             expect(response.status).toBe(200)
             expect(response.body.description).toBe(todo.description)
@@ -125,7 +125,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .get(`/api/todo/${todo.id}`)
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
 
             expect(response.status).toBe(200)
             expect(response.body.description).toBe(todo.description)
@@ -140,7 +140,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .get(`/api/todo/${todo.id}`)
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
 
             expect(response.status).toBe(404)
         })
@@ -157,7 +157,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .get(`/api/todo/${todo.id}`)
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
 
             expect(response.status).toBe(404)
         })
@@ -173,7 +173,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .delete(`/api/todo/${todo.id}`)
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
 
             expect(response.status).toBe(200)
             expect(await Todo.find()).toHaveLength(0)
@@ -188,7 +188,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .delete(`/api/todo/${todo.id}`)
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
 
             expect(response.status).toBe(404)
             expect(await Todo.find()).toHaveLength(1)
@@ -203,7 +203,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .delete(`/api/todo/${todo.id}`)
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
 
             expect(response.status).toBe(404)
             expect(await Todo.find()).toHaveLength(1)
@@ -226,7 +226,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .put(`/api/todo`)
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
                 .send({
                     id: todo.id,
                     description: newDescription,
@@ -255,7 +255,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .put(`/api/todo`)
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
                 .send({
                     id: todo.id,
                     description: newDescription
@@ -280,7 +280,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .put(`/api/todo/`)
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
                 .send({
                     id: todo.id,
                     description: newDescription
@@ -298,7 +298,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .put(`/api/todo/`)
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
                 .send({
                     id: todo.id,
                     isPrivate: true,
@@ -324,7 +324,7 @@ describe('api/todo', () => {
                 .post(`/api/todo/${todo.id}/share`)
                 .set(
                     'Authorization',
-                    `Bearer ${generateAccessToken({ user: todoOwner })}`
+                    `Bearer ${generateAccessToken(todoOwner)}`
                 )
                 .send({ email: user.email })
 
@@ -345,7 +345,7 @@ describe('api/todo', () => {
                 .post(`/api/todo/${todo.id}/share`)
                 .set(
                     'Authorization',
-                    `Bearer ${generateAccessToken({ user: todoOwner })}`
+                    `Bearer ${generateAccessToken(todoOwner)}`
                 )
                 .send({ email: faker.internet.email() })
 
@@ -366,7 +366,7 @@ describe('api/todo', () => {
                 .post(`/api/todo/${todo.id}/share`)
                 .set(
                     'Authorization',
-                    `Bearer ${generateAccessToken({ user: todoOwner })}`
+                    `Bearer ${generateAccessToken(todoOwner)}`
                 )
                 .send({ email: todoOwner.email })
 
@@ -387,7 +387,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .post(`/api/todo/${todo.id}/share`)
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
                 .send({ email: faker.internet.email() })
 
             expect(response.status).toBe(404)
@@ -408,10 +408,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .post(`/api/todo/${todo.id}/share`)
-                .set(
-                    'Authorization',
-                    `Bearer ${generateAccessToken({ user: owner })}`
-                )
+                .set('Authorization', `Bearer ${generateAccessToken(owner)}`)
                 .send({ email: user.email })
 
             expect(response.status).toBe(403)
@@ -435,7 +432,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .post(`/api/todo/${todo.id}/share`)
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
                 .send({ email: user2.email })
 
             expect(response.status).toBe(403)
@@ -457,7 +454,7 @@ describe('api/todo', () => {
                 .post(`/api/todo/${todo.id}/change_ownership`)
                 .set(
                     'Authorization',
-                    `Bearer ${generateAccessToken({ user: todoOwner })}`
+                    `Bearer ${generateAccessToken(todoOwner)}`
                 )
                 .send({ email: user.email })
 
@@ -478,7 +475,7 @@ describe('api/todo', () => {
                 .post(`/api/todo/${todo.id}/change_ownership`)
                 .set(
                     'Authorization',
-                    `Bearer ${generateAccessToken({ user: todoOwner })}`
+                    `Bearer ${generateAccessToken(todoOwner)}`
                 )
                 .send({ email: faker.internet.email() })
 
@@ -499,7 +496,7 @@ describe('api/todo', () => {
                 .post(`/api/todo/${todo.id}/change_ownership`)
                 .set(
                     'Authorization',
-                    `Bearer ${generateAccessToken({ user: todoOwner })}`
+                    `Bearer ${generateAccessToken(todoOwner)}`
                 )
                 .send({ email: todoOwner.email })
 
@@ -520,7 +517,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .post(`/api/todo/${todo.id}/change_ownership`)
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
                 .send({ email: faker.internet.email() })
 
             expect(response.status).toBe(404)
@@ -541,7 +538,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .post(`/api/todo/${todo.id}/change_ownership`)
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
                 .send({ email: user.email })
 
             expect(response.status).toBe(403)
@@ -565,7 +562,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .post(`/api/todo/${todo.id}/change_ownership`)
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
                 .send({ email: user2.email })
 
             expect(response.status).toBe(403)
@@ -601,7 +598,7 @@ describe('api/todo', () => {
                 .post(`/api/todo/search_by_text`)
                 .set(
                     'Authorization',
-                    `Bearer ${generateAccessToken({ user: todoOwner })}`
+                    `Bearer ${generateAccessToken(todoOwner)}`
                 )
                 .send({ search_by: searchQuery })
 
@@ -617,7 +614,7 @@ describe('api/todo', () => {
 
             const response = await request(app)
                 .post(`/api/todo/search_by_text`)
-                .set('Authorization', `Bearer ${generateAccessToken({ user })}`)
+                .set('Authorization', `Bearer ${generateAccessToken(user)}`)
                 .send({ search_by: searchQuery })
 
             expect(response.status).toBe(200)
@@ -652,7 +649,7 @@ describe('api/todo', () => {
                 .post(`/api/todo/search_by_text`)
                 .set(
                     'Authorization',
-                    `Bearer ${generateAccessToken({ user: todoOwner })}`
+                    `Bearer ${generateAccessToken(todoOwner)}`
                 )
                 .send({ search_by: searchQuery })
 
@@ -699,7 +696,7 @@ describe('api/todo', () => {
                 .post(`/api/todo/search_in_radius`)
                 .set(
                     'Authorization',
-                    `Bearer ${generateAccessToken({ user: todoOwner })}`
+                    `Bearer ${generateAccessToken(todoOwner)}`
                 )
                 .send(body)
 
