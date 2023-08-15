@@ -9,6 +9,7 @@ const { locationFormat } = require('../shared/todoHelper')
 
 const { accessibleBy } = require('@casl/mongoose')
 const { ForbiddenError } = require('@casl/ability')
+const { lookUpRaw } = require("geojson-places");
 
 export const listTodos = async (_user, ability) => {
     const todos = await todoRepository.list(accessibleBy(ability).Todo)
@@ -217,4 +218,33 @@ export const searchInRadius = async (_user, ability, params) => {
     })
 
     return todos
+}
+
+export const checkCoordinates = async (_user, ability, params, body) => {
+    const { id } = params
+    const { userId } = body
+
+    const targetTodo = await todoRepository.get({
+        $and: [
+            accessibleBy(ability).Todo,
+            { _id: id }
+        ]
+    })
+
+    if (!targetTodo) throw new NotFoundError("Todo doesn't exist or you don't have access to it.")
+
+    const latestTodoByUser = await todoRepository.get({ userId }, { sort: { timestamp: -1} })
+
+    if (!latestTodoByUser) return
+
+    const currentTodoCoords = targetTodo.location.coordinates
+    const currentTodoCoordsData = lookUpRaw(currentTodoCoords[1], currentTodoCoords[0])
+
+    const latestTodoCoords = latestTodoByUser.location.coordinates
+    const latestTodoCoordsData = lookUpRaw(latestTodoCoords[1], latestTodoCoords[0])
+
+    const isTheSameCountry =
+        latestTodoCoordsData.features[0].properties.geonunit === currentTodoCoordsData.features[0].properties.geonunit
+
+    return isTheSameCountry
 }

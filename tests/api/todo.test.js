@@ -704,4 +704,108 @@ describe('api/todo', () => {
             expect(response.body.result).toHaveLength(2)
         })
     })
+
+    describe('POST /:id/check_coordinates', () => {
+        it('returns true if latest todo created by target user is in the same country as target todo', async () => {
+            const newOwner = new UserFactory()
+            const todoOwner = await newOwner.save()
+
+            const newTodo = new TodoFactory({
+                userId: todoOwner.id,
+                coordinates: [-92.661399, 47.907629]
+            })
+
+            const todo = await newTodo.save()
+
+            const newTargetUser = new UserFactory()
+            const targetUser = await newTargetUser.save()
+
+            const newTodo2 = new TodoFactory({
+                userId: targetUser.id,
+                coordinates: [-92.66159, 47.90767]
+            })
+            await newTodo2.save()
+
+            const body = {
+                userId: targetUser.id
+            }
+
+            const response = await request(app)
+                .post(`/api/todo/${todo.id}/check_coordinates`)
+                .set(
+                    'Authorization',
+                    `Bearer ${generateAccessToken(todoOwner)}`
+                )
+                .send(body)
+
+            expect(response.status).toBe(200)
+            expect(response.body.result).toBe(true)
+        })
+
+        it('returns false if latest todo created by target user is in another country as target todo', async () => {
+            const newOwner = new UserFactory()
+            const todoOwner = await newOwner.save()
+
+            const newTodo = new TodoFactory({
+                userId: todoOwner.id,
+                isPrivate: false,
+                coordinates: [-92.661399, 47.907629]
+            })
+
+            const todo = await newTodo.save()
+
+            const newTargetUser = new UserFactory()
+            const targetUser = await newTargetUser.save()
+
+            const newTodo2 = new TodoFactory({
+                userId: targetUser.id,
+                coordinates: [39.2075, 11.97857]
+            })
+            await newTodo2.save()
+
+            const body = {
+                userId: targetUser.id
+            }
+
+            const response = await request(app)
+                .post(`/api/todo/${todo.id}/check_coordinates`)
+                .set(
+                    'Authorization',
+                    `Bearer ${generateAccessToken(todoOwner)}`
+                )
+                .send(body)
+
+            expect(response.status).toBe(200)
+            expect(response.body.result).toBe(false)
+        })
+
+        it('returns null if there is no info about latest todo by target user', async () => {
+            const newOwner = new UserFactory()
+            const todoOwner = await newOwner.save()
+
+            const newTodo = new TodoFactory({
+                userId: todoOwner.id
+            })
+
+            const todo = await newTodo.save()
+
+            const newTargetUser = new UserFactory()
+            const targetUser = await newTargetUser.save()
+
+            const body = {
+                userId: targetUser.id
+            }
+
+            const response = await request(app)
+                .post(`/api/todo/${todo.id}/check_coordinates`)
+                .set(
+                    'Authorization',
+                    `Bearer ${generateAccessToken(todoOwner)}`
+                )
+                .send(body)
+
+            expect(response.status).toBe(200)
+            expect(response.body.result).toBe(undefined)
+        })
+    })
 })

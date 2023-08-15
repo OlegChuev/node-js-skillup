@@ -107,5 +107,14 @@ router
         todoValidator.searchInRadius,
         todoController.searchInRadius
     )
+    .post(
+        '/:id/check_coordinates',
+        verifyJWT,
+        verifyAccess,
+        verifySubscription,
+        verifyAbility,
+        todoValidator.checkCoordinates,
+        todoController.checkCoordinates
+    )
 
 module.exports = router

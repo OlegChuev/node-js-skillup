@@ -58,7 +58,7 @@ wss.broadcastToUser = async (userId, data) => {
 }
 
 wss.broadcastToRoom = async (room, data) => {
-    wsRooms[room].forEach((client) => {
+    wsRooms[room]?.forEach((client) => {
         client.send(data)
     })
 }

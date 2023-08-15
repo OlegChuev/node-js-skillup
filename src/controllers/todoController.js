@@ -141,3 +141,17 @@ export const searchInRadius = async (req, res, next) => {
         next(error)
     }
 }
+
+export const checkCoordinates = async (req, res, next) => {
+    try {
+        const result = await todoService.checkCoordinates(
+            req.user,
+            req.ability,
+            req.params,
+            req.body
+        )
+        res.status(StatusCodes.OK).json({ result })
+    } catch (error) {
+        next(error)
+    }
+}

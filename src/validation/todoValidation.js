@@ -84,3 +84,12 @@ export const searchInRadius = celebrate({
             )
     })
 })
+
+export const checkCoordinates = celebrate({
+    params: Joi.object({
+        id: Joi.string().required()
+    }),
+    body: Joi.object({
+        userId: Joi.number().required()
+    })
+})
