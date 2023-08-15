@@ -11,17 +11,34 @@ const server = http.createServer(app)
 const wss = new WebSocket.Server({ server })
 
 const wsClients = {}
+const wsRooms = {}
 
 wss.on('connection', (ws, req) => {
     const url = new URL(`${HOST}${req.url}`)
     const token = url.searchParams.get('token')
+    const room = url.searchParams.get('room')
 
     verifyAccessToken(token, async (err, decoded) => {
         if (err) {
             ws.send('Error: Your token is no longer valid.')
             ws.close()
         } else {
-            wsClients[decoded.id] = ws
+            const userId = decoded.id
+            wsClients[userId] = ws
+
+            if (!wsRooms[room]) wsRooms[room] = []
+            wsRooms[room].push(ws)
+
+            ws.on('close', () => {
+                // Remove the client from the room
+                if (wsRooms[room])
+                    wsRooms[room] = wsRooms[room].filter(
+                        (client) => client !== ws
+                    )
+
+                // Remove the client from the array of clients
+                if (wsClients[userId]) delete wsClients[userId]
+            })
         }
     })
 
@@ -38,6 +55,12 @@ wss.broadcastToUser = async (userId, data) => {
     const ws = wsClients[userId]
 
     if (ws) ws.send(data)
+}
+
+wss.broadcastToRoom = async (room, data) => {
+    wsRooms[room].forEach((client) => {
+        client.send(data)
+    })
 }
 
 if (ENV !== 'test') {

@@ -63,9 +63,7 @@ export const updateTodo = async (user, ability, params) => {
 
     await todoRepository.save(todo)
 
-    todo.sharedWith.forEach((userId) => {
-        wss.broadcastToUser(userId, JSON.stringify({ event: 'todoUpdated', todo }))
-    })
+    wss.broadcastToRoom(`todo-${todo.id}`, JSON.stringify({ event: 'todoUpdated', todo }))
 
     return todo
 }
@@ -102,9 +100,7 @@ export const destroyTodo = async (user, ability, params) => {
 
     if (!todo) throw new NotFoundError("Todo doesn't exist or you don't have access to it.")
 
-    todo.sharedWith.forEach((userId) => {
-        wss.broadcastToUser(userId, JSON.stringify({ event: 'todoDestroyed', todo }))
-    })
+    wss.broadcastToRoom(`todo-${todo.id}`, JSON.stringify({ event: 'todoDestroyed', todo }))
 
     return todo
 }
@@ -151,9 +147,7 @@ export const giveAccessToUser = async (user, ability, params, body) => {
 
     const result = await todoRepository.save(todo)
 
-    todo.sharedWith.forEach((userId) => {
-        wss.broadcastToUser(userId, JSON.stringify({ event: 'todoShared', todo }))
-    })
+    wss.broadcastToRoom(`todo-${todo.id}`, JSON.stringify({ event: 'todoShared', todo }))
 
     return result
 }
@@ -183,9 +177,7 @@ export const changeOwnership = async (user, ability, params, body) => {
 
     const result = await todoRepository.save(todo)
 
-    todo.sharedWith.forEach((userId) => {
-        wss.broadcastToUser(userId, JSON.stringify({ event: 'todoChangedOwnership', todo }))
-    })
+    wss.broadcastToRoom(`todo-${todo.id}`, JSON.stringify({ event: 'todoChangedOwnership', todo }))
 
     return result
 }
