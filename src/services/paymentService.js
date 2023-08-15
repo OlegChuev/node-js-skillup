@@ -43,6 +43,9 @@ export const createSubscription = async (user, params) => {
                     price: priceId
                 }
             ],
+            automatic_tax: {
+                enabled: true
+            },
             payment_behavior: 'default_incomplete',
             payment_settings: {
                 save_default_payment_method: 'on_subscription'

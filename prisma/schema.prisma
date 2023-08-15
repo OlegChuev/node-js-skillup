@@ -12,6 +12,8 @@ model Users {
   username                      String   @unique @db.VarChar(255)
   password                      String   @db.VarChar(255)
   email                         String   @unique @db.VarChar(255)
+  country                       String   @db.VarChar(255)
+  postal_code                   String   @db.VarChar(255)
   stripe_customer_id            String?  @unique
   stripe_subscription_id        String?  @unique
   stripe_subscription_is_active Boolean  @default(false)
