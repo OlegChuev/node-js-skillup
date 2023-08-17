@@ -5,7 +5,7 @@ import ForbiddenError from '../errors/forbiddenError'
 
 const userRepository = require('../repository/userRepository')
 
-const verifyJWT = (req, res, next) => {
+const verifyJWT = async (req, res, next) => {
     const authHeader = req.headers.authorization || req.headers.Authorization
 
     if (!authHeader?.startsWith('Bearer '))
@@ -20,7 +20,7 @@ const verifyJWT = (req, res, next) => {
         req.user = await userRepository.get({ id: decoded.id })
 
         next()
-    })
+    }).catch((error) => next(error))
 }
 
 module.exports = verifyJWT

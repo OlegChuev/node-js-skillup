@@ -6,8 +6,7 @@ const defaultTrialPeriodDays = 7
 const verifySubscription = (req, _res, next) => {
     const currentUser = req.user
     if (currentUser.stripe_subscription_is_active) {
-        next()
-        return
+        return next()
     }
 
     const trialEndDate = req.user.createdAt
@@ -18,8 +17,7 @@ const verifySubscription = (req, _res, next) => {
         !currentUser.stripe_subscription_is_active &&
         currentDate < trialEndDate
     ) {
-        next()
-        return
+        return next()
     }
 
     throw new PaymentRequiredError('Subscribe to continue using application')
