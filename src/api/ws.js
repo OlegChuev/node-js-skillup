@@ -3,7 +3,7 @@ import http from 'http'
 import WebSocket from 'ws'
 import logger from '../../config/winston'
 import { verifyAccessToken } from '../shared/jwtHelper/index'
-import { dispatchEvent } from '../middleware/wsMessageHandler'
+import { dispatchEvent, roomHandler } from '../middleware/wsMessageHandler'
 import { WS_PORT, HOST, ENV } from '../../config'
 
 const app = express()
@@ -24,10 +24,11 @@ wss.on('connection', (ws, req) => {
             ws.close()
         } else {
             const userId = decoded.id
-            wsClients[userId] = ws
 
-            if (!wsRooms[room]) wsRooms[room] = []
-            wsRooms[room].push(ws)
+            if (room)
+                roomHandler(ws, wsRooms, userId, room)
+
+            wsClients[userId] = ws
 
             ws.on('close', () => {
                 // Remove the client from the room
