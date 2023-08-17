@@ -47,7 +47,7 @@ router
         todoController.destroy
     )
     .put(
-        '/',
+        '/:id',
         verifyJWT,
         verifyAccess,
         verifySubscription,
@@ -70,6 +70,15 @@ router
         verifySubscription,
         verifyAbility,
         todoController.createRandom
+    )
+    .get(
+        '/:id/will_go_public',
+        verifyJWT,
+        verifyAccess,
+        verifySubscription,
+        verifyAbility,
+        todoValidator.willGoPublic,
+        todoController.willGoPublic
     )
     .post(
         '/:id/share',

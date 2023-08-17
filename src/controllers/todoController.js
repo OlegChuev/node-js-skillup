@@ -65,6 +65,7 @@ export const update = async (req, res, next) => {
         const result = await todoService.updateTodo(
             req.user,
             req.ability,
+            req.params,
             req.body
         )
 
@@ -150,6 +151,21 @@ export const checkCoordinates = async (req, res, next) => {
             req.params,
             req.body
         )
+
+        res.status(StatusCodes.OK).json({ result })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const willGoPublic = async (req, res, next) => {
+    try {
+        const result = await todoService.willGoPublic(
+            req.user,
+            req.ability,
+            req.params
+        )
+
         res.status(StatusCodes.OK).json({ result })
     } catch (error) {
         next(error)

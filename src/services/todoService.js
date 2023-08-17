@@ -11,6 +11,8 @@ const { accessibleBy } = require('@casl/mongoose')
 const { ForbiddenError } = require('@casl/ability')
 const { lookUpRaw } = require("geojson-places");
 
+const maxSharedUsersBeforeGoPublic = 3
+
 export const listTodos = async (_user, ability) => {
     const todos = await todoRepository.list(accessibleBy(ability).Todo)
 
@@ -42,11 +44,11 @@ export const createTodo = async (user, params) => {
     return todo
 }
 
-export const updateTodo = async (user, ability, params) => {
+export const updateTodo = async (user, ability, params, body) => {
     const { id } = params
 
-    const location = params?.location?.coordinates
-        ? locationFormat(params.location.coordinates)
+    const location = body?.location?.coordinates
+        ? locationFormat(body.location.coordinates)
         : {}
 
     const todo = await todoRepository.get({
@@ -58,7 +60,7 @@ export const updateTodo = async (user, ability, params) => {
 
     if (!todo) throw new NotFoundError("Todo doesn't exist or you don't have access to it.")
 
-    todo.set({ ...params, location })
+    todo.set({ ...body, location })
 
     ForbiddenError.from(ability).throwUnlessCan('update', todo)
 
@@ -150,7 +152,31 @@ export const giveAccessToUser = async (user, ability, params, body) => {
 
     wss.broadcastToRoom(`todo-${todo.id}`, JSON.stringify({ event: 'todoShared', todo }))
 
+    if (result.sharedWith.length >= maxSharedUsersBeforeGoPublic) {
+        makeTodoPublic(todo)
+        wss.broadcastToRoom(`todo-${todo.id}`, JSON.stringify({ event: 'todoSetToPublic', todo }))
+    }
+
     return result
+}
+
+export const willGoPublic = async (_user, ability, params) => {
+    const { id } = params
+
+    const todo = await todoRepository.get({
+        $and: [
+            accessibleBy(ability).Todo,
+            { _id: id }
+        ]
+    })
+
+    if (!todo) throw new NotFoundError("Todo doesn't exist or you don't have access to it.")
+    ForbiddenError.from(ability).throwUnlessCan('share', todo)
+
+    const amountAfterSharing = todo.sharedWith.length + 1
+    const willGoPublicAfterSharing = amountAfterSharing >= maxSharedUsersBeforeGoPublic
+
+    return willGoPublicAfterSharing
 }
 
 export const changeOwnership = async (user, ability, params, body) => {
@@ -247,4 +273,9 @@ export const checkCoordinates = async (_user, ability, params, body) => {
         latestTodoCoordsData.features[0].properties.geonunit === currentTodoCoordsData.features[0].properties.geonunit
 
     return isTheSameCountry
+}
+
+export const makeTodoPublic = async (todo) => {
+    todo.isPrivate = false
+    await todoRepository.save(todo)
 }
