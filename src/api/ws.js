@@ -18,38 +18,40 @@ wss.on('connection', (ws, req) => {
     const token = url.searchParams.get('token')
     const room = url.searchParams.get('room')
 
-    verifyAccessToken(token, async (err, decoded) => {
-        if (err) {
-            ws.send('Error: Your token is no longer valid.')
-            ws.close()
-        } else {
-            const userId = decoded.id
+    try {
+        const decoded = verifyAccessToken(token)
+        const userId = decoded.id
 
-            if (room)
-                roomHandler(ws, wsRooms, userId, room)
+        if (room)
+            roomHandler(ws, wsRooms, userId, room)
 
-            wsClients[userId] = ws
+        wsClients[userId] = ws
 
-            ws.on('close', () => {
-                // Remove the client from the room
-                if (wsRooms[room])
-                    wsRooms[room] = wsRooms[room].filter(
-                        (client) => client !== ws
-                    )
+        ws.on('close', () => {
+            // Remove the client from the room
+            if (wsRooms[room])
+                wsRooms[room] = wsRooms[room].filter(
+                    (client) => client !== ws
+                )
 
-                // Remove the client from the array of clients
-                if (wsClients[userId]) delete wsClients[userId]
-            })
-        }
-    })
+            // Remove the client from the array of clients
+            if (wsClients[userId]) delete wsClients[userId]
+        })
 
-    ws.on('message', (message) => {
-        dispatchEvent(wss, ws, message)
-    })
+        ws.on('message', (message) => {
+            dispatchEvent(wss, ws, message)
+        })
 
-    ws.on('error', (error) => ws.send(error))
+        ws.on('error', (error) => ws.send(error))
 
-    ws.send('Hi there, I am a WebSocket server')
+        ws.send('Hi there, I am a WebSocket server')
+    }
+    catch (err) {
+        ws.send(`Error: ${err.message}.`)
+        ws.close()
+
+        return
+    }
 })
 
 wss.broadcastToUser = async (userId, data) => {

@@ -13,14 +13,14 @@ const verifyJWT = async (req, res, next) => {
 
     const token = authHeader.split(' ')[1]
 
-    jwtHelper.verifyAccessToken(token, async (err, decoded) => {
-        if (err)
-            throw new ForbiddenError('Invalid or expired JWT token.')
-
+    try {
+        const decoded = jwtHelper.verifyAccessToken(token)
         req.user = await userRepository.get({ id: decoded.id })
 
         next()
-    }).catch((error) => next(error))
+    } catch(err) {
+        throw new ForbiddenError('Invalid or expired JWT token.')
+    }
 }
 
 module.exports = verifyJWT

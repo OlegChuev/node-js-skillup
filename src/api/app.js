@@ -12,7 +12,7 @@ const routes = require('../routes/index')
 
 const { ENV } = require('../../config')
 
-// set up rate limiter: maximum of 10 requests per 10 seconds
+// set up rate limiter
 const limiter = RateLimit({
     windowMs: 1000, // 1 second
     max: ENV === 'test' ? 100 : 5

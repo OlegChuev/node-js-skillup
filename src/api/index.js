@@ -5,7 +5,7 @@ import logger from '../../config/winston'
 
 const { WEB_PORT, ENV } = require('../../config')
 
-const ws = require('./ws')
+require('./ws')
 
 let server
 

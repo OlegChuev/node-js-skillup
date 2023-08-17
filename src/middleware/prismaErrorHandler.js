@@ -1,6 +1,8 @@
 import { StatusCodes } from 'http-status-codes'
 import ApiError from '../errors/apiError'
 
+// https://www.prisma.io/docs/reference/api-reference/error-reference#common
+
 // eslint-disable-next-line import/prefer-default-export
 export const handlePrismaError = (err) => {
     switch (err.code) {
