@@ -10,8 +10,8 @@ export const save = async (todo) => {
     return todo.save()
 }
 
-export const get = async (filter) => {
-    return Todo.findOne(filter)
+export const get = async (conditions, options) => {
+    return Todo.findOne(conditions, null, options)
 }
 
 export const list = async (filter) => {

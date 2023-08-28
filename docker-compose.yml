@@ -8,6 +8,7 @@ services:
     ports:
       - 3000:3000
       - 9229:9229
+      - 8999:8999
     depends_on:
       - mongodb
       - postgres

@@ -31,8 +31,10 @@ export const destroy = celebrate({
 })
 
 export const put = celebrate({
+    params: Joi.object({
+        id: Joi.string().required()
+    }),
     body: Joi.object({
-        id: Joi.string().required(),
         title: Joi.string().optional(),
         context: Joi.string().optional(),
         description: Joi.string().optional(),
@@ -46,6 +48,12 @@ export const put = celebrate({
                     Joi.number().required().min(-90).max(90)
                 )
         }
+    })
+})
+
+export const willGoPublic = celebrate({
+    params: Joi.object({
+        id: Joi.string().required()
     })
 })
 
@@ -82,5 +90,14 @@ export const searchInRadius = celebrate({
                 Joi.number().required().min(-180).max(180),
                 Joi.number().required().min(-90).max(90)
             )
+    })
+})
+
+export const checkCoordinates = celebrate({
+    params: Joi.object({
+        id: Joi.string().required()
+    }),
+    body: Joi.object({
+        userId: Joi.number().required()
     })
 })

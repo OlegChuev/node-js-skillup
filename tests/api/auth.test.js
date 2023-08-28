@@ -116,7 +116,9 @@ describe('POST auth/sign_up', () => {
         const params = {
             username: faker.internet.userName(),
             password: faker.internet.password(),
-            email: faker.internet.email()
+            email: faker.internet.email(),
+            country: faker.location.country(),
+            postal_code: faker.location.zipCode()
         }
 
         it('respond with valid HTTP status code and creates new user', async () => {
@@ -134,7 +136,9 @@ describe('POST auth/sign_up', () => {
         const invalidSignUpParams = {
             username: faker.internet.userName(),
             password: 'a',
-            email: 'asd'
+            email: 'asd',
+            county: faker.location.country(),
+            postal_code: faker.location.zipCode()
         }
 
         it('respond with invalid HTTP status code and returns validation error', async () => {

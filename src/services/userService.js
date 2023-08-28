@@ -22,7 +22,7 @@ export const listAllUsers = async () => {
 }
 
 export const signUpUser = async (params) => {
-    const { username, password, email } = params
+    const { username, password, email, country, postal_code } = params
 
     const saltRounds = 10
     const salt = await bcrypt.genSalt(saltRounds)
@@ -31,7 +31,9 @@ export const signUpUser = async (params) => {
     const newUser = await userRepository.create({
         username,
         password: hash,
-        email
+        email,
+        country,
+        postal_code
     })
 
     const stripeCustomer =
@@ -39,7 +41,11 @@ export const signUpUser = async (params) => {
             ? { id: null }
             : await stripe.client.customers.create({
                   email,
-                  name: newUser.username
+                  name: newUser.username,
+                  address: {
+                      country: newUser.country,
+                      postal_code: newUser.postal_code
+                  }
               })
 
     await userRepository.update(

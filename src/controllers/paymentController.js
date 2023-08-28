@@ -34,7 +34,7 @@ export const createSubscription = async (req, res, next) => {
             req.body
         )
 
-        res.status(200).json(result)
+        res.status(StatusCodes.OK).json(result)
     } catch (error) {
         next(error)
     }

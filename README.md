@@ -23,9 +23,17 @@ These instructions will help you set up the development environment for the proj
 
 `cp .env.example .env`
 
-4. Build and start the Docker containers:
+4. Install dependencies
+
+`docker compose run --rm web npm i`
+
+5. Build and start the Docker containers:
 
 `docker compose up -d`
+
+6. Run migrations
+
+`docker compose run --rm web npx prisma migrate dev`
 
 The application should now be running at `http://localhost:3000`.
 
